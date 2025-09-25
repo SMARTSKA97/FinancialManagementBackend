@@ -1,0 +1,661 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{1B151DA9-3978-450A-952C-A196FAB16FCC}|src\\Core\\FinancialPlanner.Domain\\FinancialPlanner.Domain.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\core\\financialplanner.domain\\entities\\transaction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1B151DA9-3978-450A-952C-A196FAB16FCC}|src\\Core\\FinancialPlanner.Domain\\FinancialPlanner.Domain.csproj|solutionrelative:src\\core\\financialplanner.domain\\entities\\transaction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\services\\transactionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\services\\transactionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\financialplanner.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\financialplanner.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{60E081EA-7D2F-41A5-B635-5A270454842D}|src\\Infrastructure\\FinancialPlanner.Infrastructure\\FinancialPlanner.Infrastructure.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\infrastructure\\financialplanner.infrastructure\\repositories\\transactionrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{60E081EA-7D2F-41A5-B635-5A270454842D}|src\\Infrastructure\\FinancialPlanner.Infrastructure\\FinancialPlanner.Infrastructure.csproj|solutionrelative:src\\infrastructure\\financialplanner.infrastructure\\repositories\\transactionrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{60E081EA-7D2F-41A5-B635-5A270454842D}|src\\Infrastructure\\FinancialPlanner.Infrastructure\\FinancialPlanner.Infrastructure.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\infrastructure\\financialplanner.infrastructure\\financialplanner.infrastructure.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{60E081EA-7D2F-41A5-B635-5A270454842D}|src\\Infrastructure\\FinancialPlanner.Infrastructure\\FinancialPlanner.Infrastructure.csproj|solutionrelative:src\\infrastructure\\financialplanner.infrastructure\\financialplanner.infrastructure.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{60E081EA-7D2F-41A5-B635-5A270454842D}|src\\Infrastructure\\FinancialPlanner.Infrastructure\\FinancialPlanner.Infrastructure.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\infrastructure\\financialplanner.infrastructure\\repositories\\accountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{60E081EA-7D2F-41A5-B635-5A270454842D}|src\\Infrastructure\\FinancialPlanner.Infrastructure\\FinancialPlanner.Infrastructure.csproj|solutionrelative:src\\infrastructure\\financialplanner.infrastructure\\repositories\\accountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\contracts\\itransactionrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\contracts\\itransactionrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\contracts\\iaccountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\contracts\\iaccountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\helpers\\apiresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\helpers\\apiresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\helpers\\paginatedresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\helpers\\paginatedresult.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\helpers\\queryparameters.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\helpers\\queryparameters.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\dtos\\accounts\\accountdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\dtos\\accounts\\accountdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\dtos\\accounts\\createaccountdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\dtos\\accounts\\createaccountdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1B151DA9-3978-450A-952C-A196FAB16FCC}|src\\Core\\FinancialPlanner.Domain\\FinancialPlanner.Domain.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\core\\financialplanner.domain\\entities\\account.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1B151DA9-3978-450A-952C-A196FAB16FCC}|src\\Core\\FinancialPlanner.Domain\\FinancialPlanner.Domain.csproj|solutionrelative:src\\core\\financialplanner.domain\\entities\\account.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\presentation\\financialplanner.api\\controllers\\accountscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|solutionrelative:src\\presentation\\financialplanner.api\\controllers\\accountscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\presentation\\financialplanner.api\\financialplanner.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|solutionrelative:src\\presentation\\financialplanner.api\\financialplanner.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\presentation\\financialplanner.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|solutionrelative:src\\presentation\\financialplanner.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\mappingprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\dtos\\transactions\\transactiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\dtos\\transactions\\transactiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\presentation\\financialplanner.api\\controllers\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|solutionrelative:src\\presentation\\financialplanner.api\\controllers\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\dtos\\dashboard\\spendingbycategorydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\dtos\\dashboard\\spendingbycategorydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\presentation\\financialplanner.api\\controllers\\transactionscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|solutionrelative:src\\presentation\\financialplanner.api\\controllers\\transactionscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\dtos\\transactions\\upserttransactiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\dtos\\transactions\\upserttransactiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\presentation\\financialplanner.api\\controllers\\categoriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|solutionrelative:src\\presentation\\financialplanner.api\\controllers\\categoriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\presentation\\financialplanner.api\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|solutionrelative:src\\presentation\\financialplanner.api\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1B151DA9-3978-450A-952C-A196FAB16FCC}|src\\Core\\FinancialPlanner.Domain\\FinancialPlanner.Domain.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\core\\financialplanner.domain\\entities\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1B151DA9-3978-450A-952C-A196FAB16FCC}|src\\Core\\FinancialPlanner.Domain\\FinancialPlanner.Domain.csproj|solutionrelative:src\\core\\financialplanner.domain\\entities\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1B151DA9-3978-450A-952C-A196FAB16FCC}|src\\Core\\FinancialPlanner.Domain\\FinancialPlanner.Domain.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\core\\financialplanner.domain\\financialplanner.domain.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{1B151DA9-3978-450A-952C-A196FAB16FCC}|src\\Core\\FinancialPlanner.Domain\\FinancialPlanner.Domain.csproj|solutionrelative:src\\core\\financialplanner.domain\\financialplanner.domain.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\dtos\\dashboard\\dashboardsummarydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\dtos\\dashboard\\dashboardsummarydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\dtos\\transactions\\createtransactiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\dtos\\transactions\\createtransactiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\dtos\\accounts\\updateaccountdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\dtos\\accounts\\updateaccountdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\contracts\\igenericrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\contracts\\igenericrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1B151DA9-3978-450A-952C-A196FAB16FCC}|src\\Core\\FinancialPlanner.Domain\\FinancialPlanner.Domain.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\core\\financialplanner.domain\\enums\\transactiontype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1B151DA9-3978-450A-952C-A196FAB16FCC}|src\\Core\\FinancialPlanner.Domain\\FinancialPlanner.Domain.csproj|solutionrelative:src\\core\\financialplanner.domain\\enums\\transactiontype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{60E081EA-7D2F-41A5-B635-5A270454842D}|src\\Infrastructure\\FinancialPlanner.Infrastructure\\FinancialPlanner.Infrastructure.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\infrastructure\\financialplanner.infrastructure\\repositories\\genericrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{60E081EA-7D2F-41A5-B635-5A270454842D}|src\\Infrastructure\\FinancialPlanner.Infrastructure\\FinancialPlanner.Infrastructure.csproj|solutionrelative:src\\infrastructure\\financialplanner.infrastructure\\repositories\\genericrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\presentation\\financialplanner.api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|solutionrelative:src\\presentation\\financialplanner.api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\presentation\\financialplanner.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|solutionrelative:src\\presentation\\financialplanner.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\presentation\\financialplanner.api\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|solutionrelative:src\\presentation\\financialplanner.api\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\dtos\\auth\\registeruserdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\dtos\\auth\\registeruserdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\presentation\\financialplanner.api\\financialplanner.api.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{3972038D-8982-402A-8889-14E8F529A47E}|src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj|solutionrelative:src\\presentation\\financialplanner.api\\financialplanner.api.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{60E081EA-7D2F-41A5-B635-5A270454842D}|src\\Infrastructure\\FinancialPlanner.Infrastructure\\FinancialPlanner.Infrastructure.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\infrastructure\\financialplanner.infrastructure\\persistence\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{60E081EA-7D2F-41A5-B635-5A270454842D}|src\\Infrastructure\\FinancialPlanner.Infrastructure\\FinancialPlanner.Infrastructure.csproj|solutionrelative:src\\infrastructure\\financialplanner.infrastructure\\persistence\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|d:\\workspace\\solo\\v2\\financialmanagementbackend\\src\\application\\financialplanner.application\\dtos\\auth\\loginuserdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CA753EA8-E660-4CA9-B36E-825EF551BBB8}|src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj|solutionrelative:src\\application\\financialplanner.application\\dtos\\auth\\loginuserdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 31,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TransactionService.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\Services\\TransactionService.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\Services\\TransactionService.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\Services\\TransactionService.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\Services\\TransactionService.cs",
+              "ViewState": "AgIAACcAAAAAAAAAAAAqwDcAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-24T11:30:24.252Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "TransactionRepository.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Infrastructure\\FinancialPlanner.Infrastructure\\Repositories\\TransactionRepository.cs",
+              "RelativeDocumentMoniker": "src\\Infrastructure\\FinancialPlanner.Infrastructure\\Repositories\\TransactionRepository.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Infrastructure\\FinancialPlanner.Infrastructure\\Repositories\\TransactionRepository.cs",
+              "RelativeToolTip": "src\\Infrastructure\\FinancialPlanner.Infrastructure\\Repositories\\TransactionRepository.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAACsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-24T11:30:03.851Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "AccountRepository.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Infrastructure\\FinancialPlanner.Infrastructure\\Repositories\\AccountRepository.cs",
+              "RelativeDocumentMoniker": "src\\Infrastructure\\FinancialPlanner.Infrastructure\\Repositories\\AccountRepository.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Infrastructure\\FinancialPlanner.Infrastructure\\Repositories\\AccountRepository.cs",
+              "RelativeToolTip": "src\\Infrastructure\\FinancialPlanner.Infrastructure\\Repositories\\AccountRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-24T11:29:47.293Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ITransactionRepository.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\Contracts\\ITransactionRepository.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\Contracts\\ITransactionRepository.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\Contracts\\ITransactionRepository.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\Contracts\\ITransactionRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-24T11:29:27.383Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "IAccountRepository.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\Contracts\\IAccountRepository.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\Contracts\\IAccountRepository.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\Contracts\\IAccountRepository.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\Contracts\\IAccountRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-24T11:29:14.222Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "PaginatedResult.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\Helpers\\PaginatedResult.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\Helpers\\PaginatedResult.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\Helpers\\PaginatedResult.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\Helpers\\PaginatedResult.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-24T11:25:31.067Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "QueryParameters.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\Helpers\\QueryParameters.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\Helpers\\QueryParameters.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\Helpers\\QueryParameters.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\Helpers\\QueryParameters.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-24T11:18:36.226Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ApiResponse.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\Helpers\\ApiResponse.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\Helpers\\ApiResponse.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\Helpers\\ApiResponse.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\Helpers\\ApiResponse.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAwwCcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-24T11:17:21.405Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "MappingProfile.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\MappingProfile.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\MappingProfile.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\MappingProfile.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\MappingProfile.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-24T10:47:04.568Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "TransactionDto.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Transactions\\TransactionDto.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\DTOs\\Transactions\\TransactionDto.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Transactions\\TransactionDto.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\DTOs\\Transactions\\TransactionDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-24T10:46:49.849Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "AccountDto.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Accounts\\AccountDto.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\DTOs\\Accounts\\AccountDto.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Accounts\\AccountDto.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\DTOs\\Accounts\\AccountDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-24T10:46:35.293Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "SpendingByCategoryDto.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Dashboard\\SpendingByCategoryDto.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\DTOs\\Dashboard\\SpendingByCategoryDto.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Dashboard\\SpendingByCategoryDto.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\DTOs\\Dashboard\\SpendingByCategoryDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-24T09:16:12.659Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "UpsertTransactionDto.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Transactions\\UpsertTransactionDto.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\DTOs\\Transactions\\UpsertTransactionDto.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Transactions\\UpsertTransactionDto.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\DTOs\\Transactions\\UpsertTransactionDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-23T20:20:41.349Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "CategoriesController.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\Controllers\\CategoriesController.cs",
+              "RelativeDocumentMoniker": "src\\Presentation\\FinancialPlanner.API\\Controllers\\CategoriesController.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\Controllers\\CategoriesController.cs",
+              "RelativeToolTip": "src\\Presentation\\FinancialPlanner.API\\Controllers\\CategoriesController.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAkwEoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-23T19:49:02.272Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "Category.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Core\\FinancialPlanner.Domain\\Entities\\Category.cs",
+              "RelativeDocumentMoniker": "src\\Core\\FinancialPlanner.Domain\\Entities\\Category.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Core\\FinancialPlanner.Domain\\Entities\\Category.cs",
+              "RelativeToolTip": "src\\Core\\FinancialPlanner.Domain\\Entities\\Category.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-23T19:17:23.17Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "DashboardController.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\Controllers\\DashboardController.cs",
+              "RelativeDocumentMoniker": "src\\Presentation\\FinancialPlanner.API\\Controllers\\DashboardController.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\Controllers\\DashboardController.cs",
+              "RelativeToolTip": "src\\Presentation\\FinancialPlanner.API\\Controllers\\DashboardController.cs",
+              "ViewState": "AgIAABwAAAAAAAAAAAAAADkAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-22T18:52:57.862Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "DashboardSummaryDto.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Dashboard\\DashboardSummaryDto.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\DTOs\\Dashboard\\DashboardSummaryDto.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Dashboard\\DashboardSummaryDto.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\DTOs\\Dashboard\\DashboardSummaryDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-22T18:52:38.161Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "CreateTransactionDto.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Transactions\\CreateTransactionDto.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\DTOs\\Transactions\\CreateTransactionDto.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Transactions\\CreateTransactionDto.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\DTOs\\Transactions\\CreateTransactionDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-22T15:12:05.898Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "TransactionsController.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\Controllers\\TransactionsController.cs",
+              "RelativeDocumentMoniker": "src\\Presentation\\FinancialPlanner.API\\Controllers\\TransactionsController.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\Controllers\\TransactionsController.cs",
+              "RelativeToolTip": "src\\Presentation\\FinancialPlanner.API\\Controllers\\TransactionsController.cs",
+              "ViewState": "AgIAAHwAAAAAAAAAAAAIwH8AAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-22T09:12:40.404Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "TransactionType.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Core\\FinancialPlanner.Domain\\Enums\\TransactionType.cs",
+              "RelativeDocumentMoniker": "src\\Core\\FinancialPlanner.Domain\\Enums\\TransactionType.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Core\\FinancialPlanner.Domain\\Enums\\TransactionType.cs",
+              "RelativeToolTip": "src\\Core\\FinancialPlanner.Domain\\Enums\\TransactionType.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-22T09:10:45.975Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "UpdateAccountDto.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Accounts\\UpdateAccountDto.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\DTOs\\Accounts\\UpdateAccountDto.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Accounts\\UpdateAccountDto.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\DTOs\\Accounts\\UpdateAccountDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-19T12:14:05.779Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "CreateAccountDto.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Accounts\\CreateAccountDto.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\DTOs\\Accounts\\CreateAccountDto.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Accounts\\CreateAccountDto.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\DTOs\\Accounts\\CreateAccountDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-19T11:16:25.426Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "GenericRepository.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Infrastructure\\FinancialPlanner.Infrastructure\\Repositories\\GenericRepository.cs",
+              "RelativeDocumentMoniker": "src\\Infrastructure\\FinancialPlanner.Infrastructure\\Repositories\\GenericRepository.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Infrastructure\\FinancialPlanner.Infrastructure\\Repositories\\GenericRepository.cs",
+              "RelativeToolTip": "src\\Infrastructure\\FinancialPlanner.Infrastructure\\Repositories\\GenericRepository.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAgwC0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-19T11:13:08.305Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "FinancialPlanner.Application.csproj",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\FinancialPlanner.Application.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-09-19T11:12:21.707Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "IGenericRepository.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\Contracts\\IGenericRepository.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\Contracts\\IGenericRepository.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\Contracts\\IGenericRepository.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\Contracts\\IGenericRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-19T11:12:25.332Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "AccountsController.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\Controllers\\AccountsController.cs",
+              "RelativeDocumentMoniker": "src\\Presentation\\FinancialPlanner.API\\Controllers\\AccountsController.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\Controllers\\AccountsController.cs",
+              "RelativeToolTip": "src\\Presentation\\FinancialPlanner.API\\Controllers\\AccountsController.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAQwCAAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-19T10:45:04.82Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "src\\Presentation\\FinancialPlanner.API\\Properties\\launchSettings.json",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\Properties\\launchSettings.json",
+              "RelativeToolTip": "src\\Presentation\\FinancialPlanner.API\\Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-09-19T09:22:25.865Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 37,
+              "Title": "FinancialPlanner.API",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj",
+              "RelativeDocumentMoniker": "src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj",
+              "RelativeToolTip": "src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-09-19T09:22:23.777Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "src\\Presentation\\FinancialPlanner.API\\Controllers\\AuthController.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "src\\Presentation\\FinancialPlanner.API\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAADYAAAAAAAAAAAAQwEoAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-19T09:12:41.674Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 39,
+              "Title": "LoginUserDto.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Auth\\LoginUserDto.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\DTOs\\Auth\\LoginUserDto.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Auth\\LoginUserDto.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\DTOs\\Auth\\LoginUserDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-19T09:12:18.896Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 36,
+              "Title": "RegisterUserDto.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Auth\\RegisterUserDto.cs",
+              "RelativeDocumentMoniker": "src\\Application\\FinancialPlanner.Application\\DTOs\\Auth\\RegisterUserDto.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Application\\FinancialPlanner.Application\\DTOs\\Auth\\RegisterUserDto.cs",
+              "RelativeToolTip": "src\\Application\\FinancialPlanner.Application\\DTOs\\Auth\\RegisterUserDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-19T09:11:46.117Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Transaction.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Core\\FinancialPlanner.Domain\\Entities\\Transaction.cs",
+              "RelativeDocumentMoniker": "src\\Core\\FinancialPlanner.Domain\\Entities\\Transaction.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Core\\FinancialPlanner.Domain\\Entities\\Transaction.cs",
+              "RelativeToolTip": "src\\Core\\FinancialPlanner.Domain\\Entities\\Transaction.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-18T06:36:42.589Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "FinancialPlanner.Domain.csproj",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Core\\FinancialPlanner.Domain\\FinancialPlanner.Domain.csproj",
+              "RelativeDocumentMoniker": "src\\Core\\FinancialPlanner.Domain\\FinancialPlanner.Domain.csproj",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Core\\FinancialPlanner.Domain\\FinancialPlanner.Domain.csproj",
+              "RelativeToolTip": "src\\Core\\FinancialPlanner.Domain\\FinancialPlanner.Domain.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-09-18T06:36:12.002Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Account.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Core\\FinancialPlanner.Domain\\Entities\\Account.cs",
+              "RelativeDocumentMoniker": "src\\Core\\FinancialPlanner.Domain\\Entities\\Account.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Core\\FinancialPlanner.Domain\\Entities\\Account.cs",
+              "RelativeToolTip": "src\\Core\\FinancialPlanner.Domain\\Entities\\Account.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-18T06:36:16.961Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "FinancialPlanner.Infrastructure.csproj",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Infrastructure\\FinancialPlanner.Infrastructure\\FinancialPlanner.Infrastructure.csproj",
+              "RelativeDocumentMoniker": "src\\Infrastructure\\FinancialPlanner.Infrastructure\\FinancialPlanner.Infrastructure.csproj",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Infrastructure\\FinancialPlanner.Infrastructure\\FinancialPlanner.Infrastructure.csproj",
+              "RelativeToolTip": "src\\Infrastructure\\FinancialPlanner.Infrastructure\\FinancialPlanner.Infrastructure.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-09-18T06:34:25.869Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 38,
+              "Title": "ApplicationDbContext.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Infrastructure\\FinancialPlanner.Infrastructure\\Persistence\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "src\\Infrastructure\\FinancialPlanner.Infrastructure\\Persistence\\ApplicationDbContext.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Infrastructure\\FinancialPlanner.Infrastructure\\Persistence\\ApplicationDbContext.cs",
+              "RelativeToolTip": "src\\Infrastructure\\FinancialPlanner.Infrastructure\\Persistence\\ApplicationDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACUAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-18T06:35:46.482Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "src\\Presentation\\FinancialPlanner.API\\appsettings.Development.json",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\appsettings.Development.json",
+              "RelativeToolTip": "src\\Presentation\\FinancialPlanner.API\\appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-09-18T06:33:24.984Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\appsettings.json",
+              "RelativeDocumentMoniker": "src\\Presentation\\FinancialPlanner.API\\appsettings.json",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\appsettings.json",
+              "RelativeToolTip": "src\\Presentation\\FinancialPlanner.API\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-09-18T06:33:22.301Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\Program.cs",
+              "RelativeDocumentMoniker": "src\\Presentation\\FinancialPlanner.API\\Program.cs",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\Program.cs",
+              "RelativeToolTip": "src\\Presentation\\FinancialPlanner.API\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-18T05:14:47.671Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "FinancialPlanner.API.csproj",
+              "DocumentMoniker": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj",
+              "RelativeDocumentMoniker": "src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj",
+              "ToolTip": "D:\\Workspace\\Solo\\v2\\FinancialManagementBackEnd\\src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj",
+              "RelativeToolTip": "src\\Presentation\\FinancialPlanner.API\\FinancialPlanner.API.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAABfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-09-18T05:14:17.852Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

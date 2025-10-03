@@ -5,6 +5,7 @@ using FinancialPlanner.Application.DTOs.Categories;
 using FinancialPlanner.Application.Services;
 using FinancialPlanner.Infrastructure.Persistence;
 using FinancialPlanner.Infrastructure.Repositories;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,12 +13,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddPresentationLayerServices(builder.Configuration);
 
 var app = builder.Build();
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor
+});
 
 // --- App Configuration ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHttpsRedirection();
 }
 
 app.UseHttpsRedirection();

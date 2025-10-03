@@ -15,6 +15,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddPresentationLayerServices(builder.Configuration);
 
 var app = builder.Build();
+const string CorsPolicy = "AllowSpecificOrigins";
+builder.Services.AddCors(o => o.AddPolicy(CorsPolicy, p =>
+    p.WithOrigins("https://financialplannerfrontend.karmakarsubhrajit680.workers.dev")
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    //.AllowCredentials()
+));
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor
@@ -32,7 +39,7 @@ app.MapGet("/health/db", async (ApplicationDbContext db) =>
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
-app.UseCors("AllowSpecificOrigins");
+app.UseCors(CorsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

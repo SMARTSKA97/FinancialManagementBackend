@@ -1,4 +1,4 @@
-﻿namespace FinancialPlanner.Application.Helpers;
+﻿namespace FinancialPlanner.Application;
 
 public class PaginatedResult<T>
 {

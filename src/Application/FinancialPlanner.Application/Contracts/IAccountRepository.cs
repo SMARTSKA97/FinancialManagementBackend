@@ -4,5 +4,5 @@ namespace FinancialPlanner.Application.Contracts;
 
 public interface IAccountRepository : IGenericRepository<Account>
 {
-    Task<IReadOnlyList<Account>> GetAccountsByUserIdAsync(string userId);
+    Task<PaginatedResult<Account>> GetPagedAccountsAsync(string userId, QueryParameters queryParams);
 }

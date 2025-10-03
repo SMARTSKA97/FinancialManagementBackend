@@ -70,7 +70,7 @@ public class DashboardController : ControllerBase
                 t.Account.UserId == userId &&
                 t.Type == TransactionType.Expense &&
                 t.Date >= startOfMonth && t.Date <= endOfMonth)
-            .GroupBy(t => t.Category.Name) // Group transactions by the category's name
+            .GroupBy(t => t.TransactionCategory.Name) // Group transactions by the category's name
             .Select(group => new SpendingByCategoryDto
             {
                 CategoryName = group.Key ?? "Uncategorized",

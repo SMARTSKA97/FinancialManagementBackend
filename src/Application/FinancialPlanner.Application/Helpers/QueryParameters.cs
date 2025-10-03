@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace FinancialPlanner.Application.Helpers;
+namespace FinancialPlanner.Application;
 
 public class QueryParameters
 {
@@ -18,13 +18,13 @@ public class QueryParameters
     }
 
     [FromQuery(Name = "sortBy")]
-    public string? SortBy { get; set; } = null; // e.g., "Date", "Amount"
+    public string? SortBy { get; set; } = null;
 
     [FromQuery(Name = "sortOrder")]
-    public string SortOrder { get; set; } = "asc"; // "asc" or "desc"
+    public string SortOrder { get; set; } = "asc";
 
     [FromQuery(Name = "globalSearch")]
-    public string? GlobalSearch { get; set; } // A single term to search across multiple fields
+    public string? GlobalSearch { get; set; }
 
     [FromQuery(Name = "filters")]
     public Dictionary<string, string> Filters { get; set; } = new Dictionary<string, string>();

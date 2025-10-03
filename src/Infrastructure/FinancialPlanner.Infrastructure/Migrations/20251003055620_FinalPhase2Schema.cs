@@ -5,7 +5,7 @@
 namespace FinancialPlanner.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddCategoryEntityAndLinkToTransaction : Migration
+    public partial class FinalPhase2Schema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

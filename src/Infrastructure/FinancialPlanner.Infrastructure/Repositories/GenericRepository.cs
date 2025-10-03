@@ -1,46 +1,49 @@
 ﻿using FinancialPlanner.Application.Contracts;
+using FinancialPlanner.Domain.Entities;
 using FinancialPlanner.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace FinancialPlanner.Infrastructure.Repositories;
 
-public class GenericRepository<T> : IGenericRepository<T> where T : class
+public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
 {
     private readonly ApplicationDbContext _context;
+    protected readonly DbSet<T> _dbSet;
 
     public GenericRepository(ApplicationDbContext context)
     {
         _context = context;
+        _dbSet = context.Set<T>();
     }
 
-    public async Task<T> AddAsync(T entity)
+    public virtual async Task<T?> GetByIdAsync(int id, bool includeRelated = false)
     {
-        await _context.Set<T>().AddAsync(entity);
+        return await _dbSet.FindAsync(id);
+    }
+
+    public async Task<IReadOnlyList<T>> FindAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await _dbSet.Where(predicate).ToListAsync();
+    }
+
+    public async Task<T> UpsertAsync(T entity)
+    {
+        if (entity.Id > 0)
+        {
+            _dbSet.Update(entity);
+        }
+        else
+        {
+            await _dbSet.AddAsync(entity);
+        }
         await _context.SaveChangesAsync();
         return entity;
     }
 
-    public void Delete(T entity)
+    public async Task DeleteAsync(T entity)
     {
-        _context.Set<T>().Remove(entity);
-        // Note: SaveChanges is often handled by a "Unit of Work" pattern, but we'll call it here for simplicity.
-        _context.SaveChanges();
-    }
-
-    public async Task<IReadOnlyList<T>> GetAllAsync()
-    {
-        return await _context.Set<T>().ToListAsync();
-    }
-
-    public async Task<T?> GetByIdAsync(int id)
-    {
-        return await _context.Set<T>().FindAsync(id);
-    }
-
-    public void Update(T entity)
-    {
-        _context.Set<T>().Update(entity);
-        _context.SaveChanges();
+        _dbSet.Remove(entity);
+        await _context.SaveChangesAsync();
     }
 }

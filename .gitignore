@@ -1,45 +1,168 @@
-# Created by https://www.toptal.com/developers/gitignore/api/dotnetcore,angular
-# Edit at https://www.toptal.com/developers/gitignore?templates=dotnetcore,angular
+# Visual Studio working folder
+.vs/
 
-### Angular ###
-## Angular ##
-# compiled output
-dist/
-tmp/
-app/**/*.js
-app/**/*.js.map
+# Visual Studio user-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
 
-# dependencies
-node_modules/
-bower_components/
+# Visual Studio cache/db
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+*.dbmdl
+*.vssscc
+*.scc
+*.vscode/
 
-# IDEs and editors
-.idea/
+# Backup & layout files
+*.backup.json
+*.DocumentLayout*
+*.opendb
+*.vscode/*
+*.vscode
+*.vsidx
+*.futdcache.v2
+*.dtbcache.v2
 
-# misc
-.sass-cache/
-connect.lock/
-coverage/
-libpeerconnection.log/
-npm-debug.log
-testem.log
-typings/
-.angular/
+# Project Evaluation metadata
+*.v10.bin
 
-# e2e
-e2e/*.js
-e2e/*.map
-
-# System Files
-.DS_Store/
-
-### DotnetCore ###
-# .NET Core build folders
+# ---- DOTNET / ASP.NET CORE ----
 bin/
 obj/
+out/
+[Bb]uild/
+[Ll]og/
+[Ll]ogs/
+*.db-shm
+*.db-wal
+*.db-journal
 
-# Common node modules locations
-/node_modules
-/wwwroot/node_modules
+# ---- USER SECRETS ----
+secrets.json
+*.secret.*
+*.secrets.json
 
-# End of https://www.toptal.com/developers/gitignore/api/dotnetcore,angular
+# ---- VISUAL STUDIO ----
+.vs/
+*.user
+*.userosscache
+*.suo
+*.sdf
+*.cachefile
+*.dbmdl
+*.pdb
+*.opendb
+*.jfm
+*.vscode/
+**.vs/** */
+
+# ---- VS CODE ----
+.history/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# ---- DOTNET TOOLS ----
+.dotnet/
+global.json
+.nuget/
+*.nupkg
+*.snupkg
+*.nuspec
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ---- RESHARPER / RIDER ----
+_ReSharper*/
+*.DotSettings.user
+.idea/
+*.sln.iml
+
+# ---- ENTITY FRAMEWORK ----
+Migrations/**/Snapshot.cs
+Migrations/**/__EFMigrationsHistory*
+Database.mdf
+Database.ldf
+
+# ---- TESTING ----
+TestResult*
+*.VisualState.xml
+*.coverage
+*.coveragexml
+*.testresults
+*.trx
+
+# ---- TEMP / CACHE ----
+*.tmp
+*.temp
+*.log
+*.svclog
+*.scc
+*.vssscc
+*.orig
+*.bak
+*.backup
+*.swp
+*.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- NODE / FRONTEND (if Angular/React SPA) ----
+node_modules/
+dist/
+build/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+.pnp/
+.pnp.js
+.pnp.cjs
+.pnp.data.json
+.eslintcache
+
+# ---- SECRETS / CONFIG ----
+appsettings.*.json
+!appsettings.Development.json
+.env
+.env.*
+
+# ---- DOCKER ----
+**/docker-compose.override.yml
+**/docker-compose.override.*.yml
+.docker/
+.dockerignore
+
+# ---- OS SPECIFIC ----
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+*.stackdump
+$RECYCLE.BIN/
+
+# ---- JETBRAINS ----
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# ---- OTHER IDEs ----
+*.tmproj
+*.sublime-project
+*.sublime-workspace
+
+# ---- RIDER / DOTCOVER ----
+.idea/
+*.dotCover
+
+# ---- LOCAL TOOLS ----
+tools/

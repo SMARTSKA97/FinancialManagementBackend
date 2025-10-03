@@ -1,6 +1,5 @@
 ﻿namespace FinancialPlanner.Application;
 
-// This enum gives us a clear, readable status instead of magic numbers like 1, 2, 3
 public enum ApiResponseStatus
 {
     Success,
@@ -10,10 +9,11 @@ public enum ApiResponseStatus
 
 public class ApiResponse<T>
 {
-    public T? Result { get; private set; }
-    public ApiResponseStatus ApiResponseStatus { get; private set; }
-    public string Message { get; private set; }
-    public List<string>? Errors { get; private set; }
+    public T? Result { get; set; }
+    public ApiResponseStatus ApiResponseStatus { get; set; }
+    public string Message { get; set; }
+    public List<string>? Errors { get; set; }
+    public bool IsSuccess => ApiResponseStatus == ApiResponseStatus.Success;
 
     private ApiResponse(ApiResponseStatus status, string message, T? result, List<string>? errors = null)
     {

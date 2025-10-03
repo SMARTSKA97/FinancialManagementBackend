@@ -1,31 +1,34 @@
-using FinancialPlanner.API.Extensions;
+﻿using FinancialPlanner.API.Extensions;
 using FinancialPlanner.Application;
-using FinancialPlanner.Application.Contracts;
-using FinancialPlanner.Application.DTOs.Categories;
-using FinancialPlanner.Application.Services;
 using FinancialPlanner.Infrastructure.Persistence;
-using FinancialPlanner.Infrastructure.Repositories;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- Refactored Dependency Injection --
+// --- Add all services BEFORE Build() ---
 builder.Services.AddPresentationLayerServices(builder.Configuration);
 
-var app = builder.Build();
+// 🔹 Register CORS policy here (before Build)
 const string CorsPolicy = "AllowSpecificOrigins";
 builder.Services.AddCors(o => o.AddPolicy(CorsPolicy, p =>
-    p.WithOrigins("https://financialplannerfrontend.karmakarsubhrajit680.workers.dev")
+    p.WithOrigins(
+        "https://financialplannerfrontend.karmakarsubhrajit680.workers.dev",
+        "https://<your-cloudflare-pages>.pages.dev"
+    )
     .AllowAnyHeader()
     .AllowAnyMethod()
-    //.AllowCredentials()
+// .AllowCredentials() // only if you need cookies/auth
 ));
+
+var app = builder.Build();
+
+// --- Middleware / app config ---
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor
 });
+
 app.MapGet("/healthz", () => Results.Ok("ok"));
 app.MapGet("/health/db", async (ApplicationDbContext db) =>
 {
@@ -35,26 +38,28 @@ app.MapGet("/health/db", async (ApplicationDbContext db) =>
         : Results.Problem("db-fail", statusCode: 503);
 });
 
-// --- App Configuration ---
 app.UseSwagger();
 app.UseSwaggerUI();
+
 app.UseHttpsRedirection();
+
+// 🔹 Apply the CORS policy after building
 app.UseCors(CorsPolicy);
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
+// --- Run EF migrations at startup ---
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    try
-    {
-        db.Database.Migrate(); // runs EF migrations automatically
-    }
+    try { db.Database.Migrate(); }
     catch (Exception ex)
     {
-        Console.Error.WriteLine("MIGRATION FAILED: " + ex.Message);
-        throw; // fail fast so you see it in Render logs
+        Console.Error.WriteLine("MIGRATION FAILED: " + ex);
+        throw;
     }
 }
 

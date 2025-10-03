@@ -11,6 +11,4 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 COPY --from=build /app .
 # Render provides $PORT; bind Kestrel to it via a tiny entrypoint
-COPY entrypoint.sh .
-RUN chmod +x entrypoint.sh
-ENTRYPOINT ["./entrypoint.sh"]
+CMD ["sh","-c","ASPNETCORE_URLS=http://0.0.0.0:${PORT} dotnet FinancialPlanner.API.dll"]

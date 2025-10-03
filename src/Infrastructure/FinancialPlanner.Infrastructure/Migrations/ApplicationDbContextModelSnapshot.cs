@@ -81,6 +81,9 @@ namespace FinancialPlanner.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId", "Name")
+                        .IsUnique();
+
                     b.ToTable("AccountCategories", "accounts");
                 });
 
@@ -292,6 +295,9 @@ namespace FinancialPlanner.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId", "Name")
+                        .IsUnique();
 
                     b.ToTable("TransactionCategories", "transactions");
                 });

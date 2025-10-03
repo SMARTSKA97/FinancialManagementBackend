@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using FinancialPlanner.Application.Contracts;
-using FinancialPlanner.Application.DTOs.Categories;
 using FinancialPlanner.Application.DTOs.TransactionCategory;
 using FinancialPlanner.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace FinancialPlanner.Application.Services;
 
@@ -19,9 +20,9 @@ public class TransactionCategoryService : ICategoryService<TransactionCategoryDt
 
     public async Task<ApiResponse<IReadOnlyList<TransactionCategoryDto>>> GetAllAsync(string userId)
     {
-        var categories = await _repository.FindAsync(c => c.UserId == userId);
-        var categoryDtos = _mapper.Map<IReadOnlyList<TransactionCategoryDto>>(categories);
-        return ApiResponse<IReadOnlyList<TransactionCategoryDto>>.Success(categoryDtos);
+        var allCategories = await _repository.FindAsync(c => c.UserId == userId);
+        var mapped = _mapper.Map<IReadOnlyList<TransactionCategoryDto>>(allCategories);
+        return ApiResponse<IReadOnlyList<TransactionCategoryDto>>.Success(mapped);
     }
 
     public async Task<ApiResponse<TransactionCategoryDto>> UpsertAsync(string userId, UpsertTransactionCategoryDto dto)
@@ -29,33 +30,38 @@ public class TransactionCategoryService : ICategoryService<TransactionCategoryDt
         TransactionCategory category;
         if (dto.Id.HasValue && dto.Id > 0)
         {
-            category = await _repository.GetByIdAsync(dto.Id.Value);
-            if (category == null || category.UserId != userId)
-            {
+            var existingCategory = await _repository.GetByIdAsync(dto.Id.Value);
+            if (existingCategory == null || existingCategory.UserId != userId)
                 return ApiResponse<TransactionCategoryDto>.Failure("Category not found.");
-            }
-            _mapper.Map(dto, category);
+            category = existingCategory;
+            category.Name = dto.Name;
         }
         else
         {
-            category = _mapper.Map<TransactionCategory>(dto);
-            category.UserId = userId;
+            category = new TransactionCategory { Name = dto.Name, UserId = userId };
         }
 
-        var savedCategory = await _repository.UpsertAsync(category);
-        var resultDto = _mapper.Map<TransactionCategoryDto>(savedCategory);
-        return ApiResponse<TransactionCategoryDto>.Success(resultDto);
+        try
+        {
+            var savedCategory = await _repository.UpsertAsync(category);
+            var resultDto = _mapper.Map<TransactionCategoryDto>(savedCategory);
+            return ApiResponse<TransactionCategoryDto>.Success(resultDto);
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException postgresEx && postgresEx.SqlState == "23505")
+        {
+            // This catches the specific "unique violation" error
+            return ApiResponse<TransactionCategoryDto>.Failure("A category with this name already exists.");
+        }
     }
 
     public async Task<ApiResponse<bool>> DeleteAsync(string userId, int id)
     {
         var category = await _repository.GetByIdAsync(id);
         if (category == null || category.UserId != userId)
-        {
             return ApiResponse<bool>.Failure("Category not found.");
-        }
 
         await _repository.DeleteAsync(category);
         return ApiResponse<bool>.Success(true, "Category deleted successfully.");
     }
 }
+

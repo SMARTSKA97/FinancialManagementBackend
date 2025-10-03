@@ -8,10 +8,8 @@ using FinancialPlanner.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- Refactored Dependency Injection ---
-builder.Services.AddApplicationServices();
-builder.Services.AddInfrastructureServices(builder.Configuration);
-builder.Services.AddApiServices();
+// --- Refactored Dependency Injection --
+builder.Services.AddPresentationLayerServices(builder.Configuration);
 
 var app = builder.Build();
 

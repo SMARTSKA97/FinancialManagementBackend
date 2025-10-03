@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinancialPlanner.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialPhase2Schema : Migration
+    public partial class FinalSchemaWithAuditingv1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -354,6 +354,13 @@ namespace FinancialPlanner.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AccountCategories_UserId_Name",
+                schema: "accounts",
+                table: "AccountCategories",
+                columns: new[] { "UserId", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Accounts_AccountCategoryId",
                 schema: "accounts",
                 table: "Accounts",
@@ -370,6 +377,13 @@ namespace FinancialPlanner.Infrastructure.Migrations
                 schema: "identity",
                 table: "Roles",
                 column: "NormalizedName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TransactionCategories_UserId_Name",
+                schema: "transactions",
+                table: "TransactionCategories",
+                columns: new[] { "UserId", "Name" },
                 unique: true);
 
             migrationBuilder.CreateIndex(

@@ -1,4 +1,5 @@
 ﻿using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Text.Json.Serialization;
 
 namespace FinancialPlanner.API.Extensions;
@@ -23,9 +24,25 @@ public static class ApiLayerServiceExtensions
             options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         });
 
+        // This is the crucial line that was missing. It registers the service
+        // that allows the DbContext to access the current HttpContext.
+        services.AddHttpContextAccessor();
+
         services.AddEndpointsApiExplorer();
+
+        var informationalVersion = Assembly.GetExecutingAssembly()
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+            .InformationalVersion;
+
         services.AddSwaggerGen(options =>
         {
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Financial Planner API",
+                Version = informationalVersion,
+                Description = "API for managing personal finances."
+            });
+
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
@@ -54,3 +71,4 @@ public static class ApiLayerServiceExtensions
         return services;
     }
 }
+

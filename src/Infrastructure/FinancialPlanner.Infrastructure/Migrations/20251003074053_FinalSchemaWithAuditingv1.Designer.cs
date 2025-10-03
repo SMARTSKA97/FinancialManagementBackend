@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinancialPlanner.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251003055620_FinalPhase2Schema")]
-    partial class FinalPhase2Schema
+    [Migration("20251003074053_FinalSchemaWithAuditingv1")]
+    partial class FinalSchemaWithAuditingv1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -83,6 +83,9 @@ namespace FinancialPlanner.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId", "Name")
+                        .IsUnique();
 
                     b.ToTable("AccountCategories", "accounts");
                 });
@@ -295,6 +298,9 @@ namespace FinancialPlanner.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId", "Name")
+                        .IsUnique();
 
                     b.ToTable("TransactionCategories", "transactions");
                 });

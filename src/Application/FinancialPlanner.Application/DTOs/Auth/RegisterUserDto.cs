@@ -5,16 +5,19 @@ namespace FinancialPlanner.Application.DTOs.Auth;
 
 public class RegisterUserDto
 {
-    [JsonPropertyName("userName")] 
     [Required]
-    public required string UserName { get; set; }
+    public required string Name { get; set; }
 
-    [JsonPropertyName("email")] 
+    [Required]
+    public DateTime DateOfBirth { get; set; }
+
     [Required]
     [EmailAddress]
     public required string Email { get; set; }
 
-    [JsonPropertyName("password")]
+    [Required]
+    public required string UserName { get; set; }
+
     [Required]
     public required string Password { get; set; }
 }

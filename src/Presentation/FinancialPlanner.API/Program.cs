@@ -19,13 +19,8 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 });
 
 // --- App Configuration ---
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.UseHttpsRedirection();
-}
-
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigins");
 app.UseAuthentication();

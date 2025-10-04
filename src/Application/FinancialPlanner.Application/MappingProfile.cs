@@ -2,6 +2,7 @@
 using FinancialPlanner.Application.DTOs.AccountCategory;
 using FinancialPlanner.Application.DTOs.Accounts;
 using FinancialPlanner.Application.DTOs.Categories;
+using FinancialPlanner.Application.DTOs.Feedback;
 using FinancialPlanner.Application.DTOs.TransactionCategory;
 using FinancialPlanner.Application.DTOs.Transactions;
 using FinancialPlanner.Domain.Entities;
@@ -27,5 +28,8 @@ public class MappingProfile : Profile
         CreateMap<UpsertAccountCategoryDto, AccountCategory>();
         CreateMap<TransactionCategory, TransactionCategoryDto>();
         CreateMap<UpsertTransactionCategoryDto, TransactionCategory>();
+
+        // Feedback Mappings
+        CreateMap<CreateFeedbackDto, Feedback>();
     }
 }

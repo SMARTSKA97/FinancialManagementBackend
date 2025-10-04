@@ -25,6 +25,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<ICategoryService<AccountCategoryDto, UpsertAccountCategoryDto>, AccountCategoryService>();
         services.AddScoped<ICategoryService<TransactionCategoryDto, UpsertTransactionCategoryDto>, TransactionCategoryService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IFeedbackService, FeedbackService>();
 
         return services;
     }

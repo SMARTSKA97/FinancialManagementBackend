@@ -14,7 +14,7 @@ const string CorsPolicy = "AllowSpecificOrigins";
 builder.Services.AddCors(o => o.AddPolicy(CorsPolicy, p =>
     p.WithOrigins(
         "https://financialplannerfrontend.karmakarsubhrajit680.workers.dev",
-        "https://<your-cloudflare-pages>.pages.dev"
+        "http://localhost:4200"
     )
     .AllowAnyHeader()
     .AllowAnyMethod()

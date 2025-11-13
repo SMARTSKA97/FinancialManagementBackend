@@ -8,4 +8,5 @@ public interface ITransactionService
     Task<ApiResponse<TransactionDto>> UpsertTransactionAsync(string userId, int accountId, UpsertTransactionDto dto);
     Task<ApiResponse<bool>> DeleteTransactionAsync(string userId, int accountId, int transactionId);
     Task<ApiResponse<bool>> CreateTransferAsync(string userId, int sourceAccountId, CreateTransferDto dto);
+    Task<ApiResponse<bool>> SwitchAccountAsync(string userId, int transactionId, int destinationAccountId);
 }

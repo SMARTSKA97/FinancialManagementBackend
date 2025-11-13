@@ -152,4 +152,39 @@ public class TransactionService : ITransactionService
             return ApiResponse<bool>.Failure($"Transfer failed: {ex.Message}");
         }
     }
+
+    public async Task<ApiResponse<bool>> SwitchAccountAsync(string userId, int transactionId, int destinationAccountId)
+    {
+        // 1. Get all entities
+        var transaction = await _unitOfWork.TransactionRepository.GetByIdAsync(transactionId);
+        if (transaction == null)
+            return ApiResponse<bool>.Failure("Transaction not found.");
+
+        var sourceAccount = await _unitOfWork.AccountRepository.GetByIdAsync(transaction.AccountId);
+        var destinationAccount = await _unitOfWork.AccountRepository.GetByIdAsync(destinationAccountId);
+
+        // 2. Security Check
+        if (sourceAccount == null || destinationAccount == null || sourceAccount.UserId != userId || destinationAccount.UserId != userId)
+            return ApiResponse<bool>.Failure("One or both accounts could not be found.");
+
+        if (sourceAccount.Id == destinationAccount.Id)
+            return ApiResponse<bool>.Failure("Cannot switch to the same account.");
+
+        // 3. Business Logic: Revert from source account
+        sourceAccount.Balance += (transaction.Type == TransactionType.Income ? -transaction.Amount : transaction.Amount);
+
+        // 4. Business Logic: Apply to destination account
+        destinationAccount.Balance += (transaction.Type == TransactionType.Income ? transaction.Amount : -transaction.Amount);
+
+        // 5. Data Change: Update the transaction's foreign key
+        transaction.AccountId = destinationAccountId;
+
+        // 6. Save all changes atomically using the Unit of Work
+        _unitOfWork.AccountRepository.Upsert(sourceAccount);
+        _unitOfWork.AccountRepository.Upsert(destinationAccount);
+        _unitOfWork.TransactionRepository.Upsert(transaction);
+        await _unitOfWork.CompleteAsync();
+
+        return ApiResponse<bool>.Success(true, "Transaction successfully switched.");
+    }
 }

@@ -42,4 +42,12 @@ public class TransactionsController : BaseController
         var response = await _transactionService.CreateTransferAsync(UserId, accountId, dto);
         return HandleApiResponse(response);
     }
+
+    [HttpPost("{transactionId}/switch-account")]
+    public async Task<IActionResult> SwitchAccount(int accountId, int transactionId, [FromBody] SwitchTransactionAccountDto dto)
+    {
+        // We can ignore the 'accountId' from the URL as the transactionId is the true source of truth
+        var response = await _transactionService.SwitchAccountAsync(UserId, transactionId, dto.DestinationAccountId);
+        return HandleApiResponse(response);
+    }
 }

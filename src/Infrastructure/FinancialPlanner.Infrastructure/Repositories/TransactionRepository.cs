@@ -22,7 +22,7 @@ public class TransactionRepository : GenericRepository<Transaction>, ITransactio
         {
             query = query.Include(t => t.TransactionCategory);
         }
-        return await query.FirstOrDefaultAsync(t => t.Id == id);
+        return await query.Include(t => t.TransactionCategory).FirstOrDefaultAsync(t => t.Id == id);
     }
 
     public async Task<PaginatedResult<Transaction>> GetPagedTransactionsForAccountAsync(int accountId, QueryParameters queryParams)

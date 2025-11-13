@@ -9,12 +9,12 @@ namespace FinancialPlanner.Infrastructure.Repositories;
 public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
 {
     private readonly ApplicationDbContext _context;
-    protected readonly DbSet<T> _dbSet;
+    private readonly DbSet<T> _dbSet;
 
     public GenericRepository(ApplicationDbContext context)
     {
         _context = context;
-        _dbSet = context.Set<T>();
+        _dbSet = _context.Set<T>();
     }
 
     public virtual async Task<T?> GetByIdAsync(int id, bool includeRelated = false)
@@ -27,7 +27,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
         return await _dbSet.Where(predicate).ToListAsync();
     }
 
-    public async Task<T> UpsertAsync(T entity)
+    public void Upsert(T entity)
     {
         if (entity.Id > 0)
         {
@@ -35,15 +35,14 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
         }
         else
         {
-            await _dbSet.AddAsync(entity);
+            _dbSet.Add(entity);
         }
-        await _context.SaveChangesAsync();
-        return entity;
     }
 
-    public async Task DeleteAsync(T entity)
+    // --- THIS IS THE FIX ---
+    // Implements the synchronous interface method
+    public void Delete(T entity)
     {
         _dbSet.Remove(entity);
-        await _context.SaveChangesAsync();
     }
 }

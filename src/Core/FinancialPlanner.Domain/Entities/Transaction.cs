@@ -10,8 +10,8 @@ public class Transaction : BaseEntity
     public TransactionType Type { get; set; }
 
     public int AccountId { get; set; }
-    public Account Account { get; set; } = null!;
+    public Account Account { get; set; } = null!; // Navigation property
 
     public int? TransactionCategoryId { get; set; }
-    public TransactionCategory? TransactionCategory { get; set; }
+    public TransactionCategory? TransactionCategory { get; set; } // Navigation property
 }

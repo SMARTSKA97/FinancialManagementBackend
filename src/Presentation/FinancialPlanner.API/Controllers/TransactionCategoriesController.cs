@@ -1,11 +1,14 @@
 ﻿using FinancialPlanner.Application;
 using FinancialPlanner.Application.Contracts;
+using FinancialPlanner.Application.DTOs.Categories;
 using FinancialPlanner.Application.DTOs.TransactionCategory;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinancialPlanner.API.Controllers;
 
 [Route("api/[controller]")]
+[Authorize]
 public class TransactionCategoriesController : BaseController
 {
     private readonly ICategoryService<TransactionCategoryDto, UpsertTransactionCategoryDto> _transactionCategoryService;
@@ -18,21 +21,21 @@ public class TransactionCategoriesController : BaseController
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var response = await _transactionCategoryService.GetAllAsync(UserId);
+        var response = await _transactionCategoryService.GetAllAsync(UserId!);
         return HandleApiResponse(response);
     }
 
     [HttpPost("upsert")]
     public async Task<IActionResult> Upsert([FromBody] UpsertTransactionCategoryDto dto)
     {
-        var response = await _transactionCategoryService.UpsertAsync(UserId, dto);
+        var response = await _transactionCategoryService.UpsertAsync(UserId!, dto);
         return HandleApiResponse(response);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var response = await _transactionCategoryService.DeleteAsync(UserId, id);
+        var response = await _transactionCategoryService.DeleteAsync(UserId!, id);
         return HandleApiResponse(response);
     }
 }

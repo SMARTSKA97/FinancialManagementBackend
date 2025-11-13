@@ -7,7 +7,7 @@ public static class ServiceExtensions
     public static IServiceCollection AddPresentationLayerServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddApiLayerServices();
-        services.AddApplicationLayerServices();
+        services.AddApplicationServices();
         services.AddInfrastructureServices(configuration); 
 
         return services;

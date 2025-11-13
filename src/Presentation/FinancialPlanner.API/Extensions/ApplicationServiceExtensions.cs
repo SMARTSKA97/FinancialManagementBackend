@@ -1,5 +1,4 @@
-﻿using FinancialPlanner.Application;
-using FinancialPlanner.Application.Contracts;
+﻿using FinancialPlanner.Application.Contracts;
 using FinancialPlanner.Application.DTOs.AccountCategory;
 using FinancialPlanner.Application.DTOs.Categories;
 using FinancialPlanner.Application.DTOs.TransactionCategory;
@@ -10,22 +9,16 @@ namespace FinancialPlanner.API.Extensions;
 
 public static class ApplicationServiceExtensions
 {
-    public static IServiceCollection AddApplicationLayerServices(this IServiceCollection services)
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddAutoMapper(typeof(MappingProfile));
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-        // --- REGISTER REPOSITORIES ---
-        services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-        services.AddScoped<IAccountRepository, AccountRepository>();
-        services.AddScoped<ITransactionRepository, TransactionRepository>();
-
-        // --- REGISTER SERVICES ---
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<ITransactionService, TransactionService>();
+        services.AddScoped<IAuthService, AuthService>();
+
         services.AddScoped<ICategoryService<AccountCategoryDto, UpsertAccountCategoryDto>, AccountCategoryService>();
         services.AddScoped<ICategoryService<TransactionCategoryDto, UpsertTransactionCategoryDto>, TransactionCategoryService>();
-        services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IFeedbackService, FeedbackService>();
 
         return services;
     }

@@ -1,6 +1,7 @@
 ﻿using FinancialPlanner.Application;
 using FinancialPlanner.Application.Contracts;
 using FinancialPlanner.Application.DTOs.Transactions;
+using FinancialPlanner.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinancialPlanner.API.Controllers;
@@ -33,6 +34,12 @@ public class TransactionsController : BaseController
     public async Task<IActionResult> Delete(int accountId, int transactionId)
     {
         var response = await _transactionService.DeleteTransactionAsync(UserId, accountId, transactionId);
+        return HandleApiResponse(response);
+    }
+    [HttpPost("transfer")]
+    public async Task<IActionResult> CreateTransfer(int accountId, [FromBody] CreateTransferDto dto)
+    {
+        var response = await _transactionService.CreateTransferAsync(UserId, accountId, dto);
         return HandleApiResponse(response);
     }
 }

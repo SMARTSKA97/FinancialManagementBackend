@@ -7,7 +7,7 @@ public class Account : BaseEntity
     public required string UserId { get; set; }
 
     public int AccountCategoryId { get; set; }
-    public AccountCategory AccountCategory { get; set; } = null!;
+    public AccountCategory AccountCategory { get; set; } = null!; // Navigation property
 
     public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

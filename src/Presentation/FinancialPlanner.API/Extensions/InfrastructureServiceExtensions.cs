@@ -1,6 +1,8 @@
 ﻿using FinancialPlanner.Application;
+using FinancialPlanner.Application.Contracts;
 using FinancialPlanner.Domain.Entities;
 using FinancialPlanner.Infrastructure.Persistence;
+using FinancialPlanner.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +27,12 @@ public static class InfrastructureServiceExtensions
         services.AddIdentityCore<ApplicationUser>(options =>
         {
             options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+ ";
+            // Relax password requirements for easier development
+            options.Password.RequireDigit = false;
+            options.Password.RequiredLength = 6;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireLowercase = false;
         })
         .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -48,6 +56,13 @@ public static class InfrastructureServiceExtensions
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
             };
         });
+
+        // --- THIS IS THE FIX ---
+        // 5. Register Repositories and the Unit of Work
+        services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+        services.AddScoped<IAccountRepository, AccountRepository>();
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
     }

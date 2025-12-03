@@ -48,6 +48,16 @@ public static class ApiLayerServiceExtensions
             options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         });
 
+        // Anti-Forgery (CSRF Protection)
+        services.AddAntiforgery(options =>
+        {
+            options.HeaderName = "X-XSRF-TOKEN";
+            options.Cookie.Name = "XSRF-TOKEN";
+            options.Cookie.HttpOnly = false; // Must be false so Angular can read it
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.Cookie.SameSite = SameSiteMode.Strict;
+        });
+
         services.AddHttpContextAccessor();
 
         services.AddEndpointsApiExplorer();

@@ -171,8 +171,14 @@ public class AuthService : IAuthService
         {
             refreshToken.RevokedUtc = DateTime.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
+            
+            // ⭐ CRITICAL: Clear session state to fully terminate unattended sessions
+            user.CurrentSessionId = null;
+            user.LastKnownIp = null;
+            user.LastKnownUserAgent = null;
+            
             await _userManager.UpdateAsync(user);
-            _logger.LogInformation("User {UserName} logged out successfully from IP {IpAddress}", user.UserName, ipAddress);
+            _logger.LogInformation("Session terminated for {UserName} from IP {IpAddress}", user.UserName, ipAddress);
         }
 
         return ApiResponse<bool>.Success(true, "Logged out successfully.");

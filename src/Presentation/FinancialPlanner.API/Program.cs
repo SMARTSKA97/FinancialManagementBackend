@@ -44,6 +44,20 @@ app.MapGet("/health/db", async (ApplicationDbContext db) =>
         : Results.Problem("db-fail", statusCode: 503);
 });
 
+// CSRF Token Endpoint (for Angular to retrieve anti-forgery token)
+app.MapGet("/api/antiforgery/token", (HttpContext context) =>
+{
+    var antiforgery = context.RequestServices.GetRequiredService<Microsoft.AspNetCore.Antiforgery.IAntiforgery>();
+    var tokens = antiforgery.GetAndStoreTokens(context);
+    context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken!, new CookieOptions 
+    { 
+        HttpOnly = false, // Angular needs to read this
+        Secure = true,
+        SameSite = SameSiteMode.Strict
+    });
+    return Results.Ok(new { token = tokens.RequestToken });
+}).RequireCors("AllowSpecificOrigins");
+
 // 4. Swagger
 if (app.Environment.IsDevelopment())
 {

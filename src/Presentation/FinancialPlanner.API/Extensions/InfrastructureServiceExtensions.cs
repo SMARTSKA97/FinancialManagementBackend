@@ -23,16 +23,23 @@ public static class InfrastructureServiceExtensions
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
             o => o.MigrationsHistoryTable("__EFMigrationsHistory", "identity")));
 
-        // 3. Register Identity
+        // 3. Register Identity with STRONG password requirements (dev AND production)
         services.AddIdentityCore<ApplicationUser>(options =>
         {
             options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+ ";
-            // Relax password requirements for easier development
-            options.Password.RequireDigit = false;
-            options.Password.RequiredLength = 6;
-            options.Password.RequireNonAlphanumeric = false;
-            options.Password.RequireUppercase = false;
-            options.Password.RequireLowercase = false;
+            
+            // PRODUCTION-GRADE Password Requirements (applied to both dev and prod)
+            options.Password.RequireDigit = true;
+            options.Password.RequiredLength = 12;
+            options.Password.RequireNonAlphanumeric = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequiredUniqueChars = 4;
+            
+            // Account Lockout Protection (prevent brute force attacks)
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+            options.Lockout.MaxFailedAccessAttempts = 5;
+            options.Lockout.AllowedForNewUsers = true;
         })
         .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -53,11 +60,11 @@ public static class InfrastructureServiceExtensions
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtSettings.Issuer,
                 ValidAudience = jwtSettings.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+                ClockSkew = TimeSpan.Zero // Strict expiration - no grace period
             };
         });
 
-        // --- THIS IS THE FIX ---
         // 5. Register Repositories and the Unit of Work
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         services.AddScoped<IAccountRepository, AccountRepository>();

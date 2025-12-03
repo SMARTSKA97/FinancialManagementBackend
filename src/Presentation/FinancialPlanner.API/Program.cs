@@ -13,8 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 // This handles all service registrations (Application, Infrastructure, API)
 builder.Services.AddPresentationLayerServices(builder.Configuration);
 
-// Add Memory Cache for Custom Rate Limiting
-builder.Services.AddMemoryCache();
+// Add Memory Cache (Required for Hybrid Cache L1 Layer)
+// Limit size to prevent memory bloat (approx 1024 items)
+builder.Services.AddMemoryCache(options => 
+{
+    options.SizeLimit = 1024; 
+});
 
 // Configure for Render.com reverse proxy (Cloudflare CDN + Render proxy)
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -110,6 +114,8 @@ app.Use(async (context, next) =>
     context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; object-src 'none'; base-uri 'self';");
     await next();
 });
+
+app.UseMiddleware<CustomRateLimitMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

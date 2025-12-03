@@ -1,4 +1,5 @@
 ﻿using FinancialPlanner.Application.Contracts;
+using FinancialPlanner.Application.DTOs.Auth; // Added for RefreshTokenData
 using FinancialPlanner.Application.DTOs.Auth;
 using FinancialPlanner.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -18,12 +19,18 @@ public class AuthService : IAuthService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly JwtSettings _jwtSettings;
     private readonly ILogger<AuthService> _logger;
+    private readonly IRedisService? _redisService;
 
-    public AuthService(UserManager<ApplicationUser> userManager, IOptions<JwtSettings> jwtOptions, ILogger<AuthService> logger)
+    public AuthService(
+        UserManager<ApplicationUser> userManager, 
+        IOptions<JwtSettings> jwtOptions, 
+        ILogger<AuthService> logger,
+        IRedisService? redisService = null)
     {
         _userManager = userManager;
         _jwtSettings = jwtOptions.Value;
         _logger = logger;
+        _redisService = redisService;
     }
 
     public async Task<ApiResponse<string>> RegisterAsync(RegisterUserDto dto)
@@ -75,6 +82,22 @@ public class AuthService : IAuthService
         if (dto.ForceLogin && !string.IsNullOrEmpty(user.LastKnownIp))
         {
              _logger.LogInformation("Forcing login for {UserName}. Revoking tokens from previous IP {LastKnownIp}", dto.UserName, user.LastKnownIp);
+             
+             // ⭐ Revoke old tokens from Redis too
+             if (_redisService != null)
+             {
+                 var oldTokens = user.RefreshTokens
+                    .Where(rt => rt.CreatedByIp == user.LastKnownIp)
+                    .Select(rt => rt.Token)
+                    .ToList();
+                 
+                 if (oldTokens.Any())
+                 {
+                     await _redisService.RevokeRefreshTokensAsync(oldTokens);
+                     _logger.LogInformation("[Redis] 🗑️ Force login - batch revoked {Count} old tokens", oldTokens.Count);
+                 }
+             }
+             
              user.RefreshTokens.RemoveAll(rt => rt.CreatedByIp == user.LastKnownIp);
         }
 
@@ -87,10 +110,43 @@ public class AuthService : IAuthService
         var refreshToken = GenerateRefreshToken(ipAddress);
 
         // Enforce One Token Per IP: Remove any existing active tokens for this IP
+        // ⭐ Clean up from Redis first
+        if (_redisService != null)
+        {
+            var currentIpTokens = user.RefreshTokens
+                .Where(rt => rt.CreatedByIp == ipAddress)
+                .Select(rt => rt.Token)
+                .ToList();
+
+            if (currentIpTokens.Any())
+            {
+                await _redisService.RevokeRefreshTokensAsync(currentIpTokens);
+                _logger.LogInformation("[Redis] 🗑️ Same-IP batch revoked {Count} tokens", currentIpTokens.Count);
+            }
+        }
         user.RefreshTokens.RemoveAll(rt => rt.CreatedByIp == ipAddress);
 
         // Aggressive Cleanup: Remove ALL tokens that are expired OR revoked
         user.RefreshTokens.RemoveAll(rt => !rt.IsActive || rt.ExpiresUtc <= DateTime.UtcNow);
+
+        // ⭐ DUAL-WRITE: Store in Redis (primary) + Database (backup during migration)
+        if (_redisService != null)
+        {
+            await _redisService.SetRefreshTokenAsync(
+                refreshToken.Token,
+                new RefreshTokenData
+                {
+                    UserId = user.Id,
+                    Token = refreshToken.Token,
+                    CreatedByIp = ipAddress,
+                    UserAgent = userAgent,
+                    CreatedAt = refreshToken.CreatedUtc,
+                    ExpiresUtc = refreshToken.ExpiresUtc
+                },
+                TimeSpan.FromDays(_jwtSettings.RefreshTokenTTL)
+            );
+            _logger.LogInformation("[Redis] ✅ Token stored for {UserName}", user.UserName);
+        }
 
         user.RefreshTokens.Add(refreshToken);
         var updateResult = await _userManager.UpdateAsync(user);
@@ -144,6 +200,24 @@ public class AuthService : IAuthService
         // Aggressive Cleanup
         user.RefreshTokens.RemoveAll(rt => !rt.IsActive || rt.ExpiresUtc <= DateTime.UtcNow);
 
+        // ⭐ DUAL-WRITE: Revoke old + Store new in Redis - OPTIMIZED ROTATION
+        if (_redisService != null)
+        {
+            await _redisService.RotateRefreshTokenAsync(token, newRefreshToken.Token,
+                new RefreshTokenData
+                {
+                    UserId = user.Id,
+                    Token = newRefreshToken.Token,
+                    CreatedByIp = ipAddress,
+                    UserAgent = user.LastKnownUserAgent ?? "Unknown",
+                    CreatedAt = newRefreshToken.CreatedUtc,
+                    ExpiresUtc = newRefreshToken.ExpiresUtc
+                },
+                TimeSpan.FromDays(_jwtSettings.RefreshTokenTTL)
+            );
+            _logger.LogInformation("[Redis] ✅ Token rotated for {UserName}", user.UserName);
+        }
+
         user.RefreshTokens.Add(newRefreshToken);
         await _userManager.UpdateAsync(user);
 
@@ -176,6 +250,13 @@ public class AuthService : IAuthService
             user.CurrentSessionId = null;
             user.LastKnownIp = null;
             user.LastKnownUserAgent = null;
+            
+            // ⭐ Revoke in Redis too
+            if (_redisService != null)
+            {
+                await _redisService.RevokeRefreshTokenAsync(token);
+                _logger.LogInformation("[Redis] ✅ Token revoked for {UserName}", user.UserName);
+            }
             
             await _userManager.UpdateAsync(user);
             _logger.LogInformation("Session terminated for {UserName} from IP {IpAddress}", user.UserName, ipAddress);

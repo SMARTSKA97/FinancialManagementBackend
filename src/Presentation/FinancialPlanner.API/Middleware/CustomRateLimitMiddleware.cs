@@ -1,17 +1,23 @@
-using Microsoft.Extensions.Caching.Memory;
+using FinancialPlanner.Application.Contracts;
 
 namespace FinancialPlanner.API.Middleware
 {
     public class CustomRateLimitMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IMemoryCache _cache;
-        private static readonly object _lock = new(); // Static lock for thread safety
+        private readonly IRedisRateLimiter? _rateLimiter;
+        private readonly ILogger<CustomRateLimitMiddleware> _logger;
+        private readonly int _maxRequests = 5; // 5 requests per window
+        private readonly TimeSpan _window = TimeSpan.FromMinutes(1); // 1 minute window
 
-        public CustomRateLimitMiddleware(RequestDelegate next, IMemoryCache cache)
+        public CustomRateLimitMiddleware(
+            RequestDelegate next, 
+            ILogger<CustomRateLimitMiddleware> logger,
+            IRedisRateLimiter? rateLimiter = null)
         {
             _next = next;
-            _cache = cache;
+            _logger = logger;
+            _rateLimiter = rateLimiter;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -20,64 +26,62 @@ namespace FinancialPlanner.API.Middleware
             if (context.Request.Path.StartsWithSegments("/api/Auth/login", StringComparison.OrdinalIgnoreCase) 
                 && HttpMethods.IsPost(context.Request.Method))
             {
-                var ip = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-                var cacheKey = $"RateLimit_{ip}";
-                bool shouldBlock = false;
-                TimeSpan retryAfter = TimeSpan.Zero;
+                var clientId = GetClientIdentifier(context);
+                var endpoint = "/api/Auth/login";
 
-                // Use a lock to prevent race conditions where multiple requests check and set simultaneously
-                lock (_lock)
+                // If Redis rate limiter is available, use it (distributed)
+                if (_rateLimiter != null)
                 {
-                    if (_cache.TryGetValue(cacheKey, out DateTime resetTime))
+                    // ⭐ OPTIMIZATION: Single atomic call to get everything!
+                    var result = await _rateLimiter.CheckLimitAsync(clientId, endpoint, _maxRequests, _window);
+
+                    if (!result.IsAllowed)
                     {
-                        var remaining = resetTime - DateTime.UtcNow;
-                        if (remaining > TimeSpan.Zero)
+                        context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                        context.Response.ContentType = "application/json";
+                        context.Response.Headers["Retry-After"] = ((int)result.ResetTime.TotalSeconds).ToString();
+
+                        var response = new
                         {
-                            context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-                            context.Response.ContentType = "application/json";
-                            // Standard Retry-After header (seconds)
-                            context.Response.Headers["Retry-After"] = remaining.TotalSeconds.ToString("F0");
-                            
-                            var response = new
-                            {
-                                Message = "Too many requests. Please try again later.",
-                                RetryAfter = Math.Ceiling(remaining.TotalSeconds)
-                            };
+                            Message = "Too many login attempts. Please try again later.",
+                            RetryAfter = Math.Ceiling(result.ResetTime.TotalSeconds),
+                            Limit = _maxRequests,
+                            Window = $"{_window.TotalMinutes} minute(s)"
+                        };
 
-                            // We can't await inside a lock, so we write to a memory stream or just return and write outside?
-                            // Actually, writing to response inside lock is bad practice (IO).
-                            // Better pattern: determine result inside lock, write outside.
-                            shouldBlock = true;
-                            retryAfter = remaining;
-                        }
+                        _logger.LogWarning("[RateLimit] ⛔ Blocked login attempt from {ClientId}", clientId);
+
+                        await context.Response.WriteAsJsonAsync(response);
+                        return;
                     }
 
-                    if (!shouldBlock)
-                    {
-                        // Allow request and set rate limit for next 1 minute
-                        var expiration = DateTime.UtcNow.AddMinutes(1);
-                        _cache.Set(cacheKey, expiration, TimeSpan.FromMinutes(1));
-                    }
+                    // Set response headers from the result
+                    context.Response.Headers["X-RateLimit-Limit"] = _maxRequests.ToString();
+                    context.Response.Headers["X-RateLimit-Remaining"] = result.Remaining.ToString();
+                    context.Response.Headers["X-RateLimit-Reset"] = DateTimeOffset.UtcNow.Add(result.ResetTime).ToUnixTimeSeconds().ToString();
                 }
-
-                if (shouldBlock)
+                else
                 {
-                    context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-                    context.Response.ContentType = "application/json";
-                    context.Response.Headers["Retry-After"] = retryAfter.TotalSeconds.ToString("F0");
-                    
-                    var response = new
-                    {
-                        Message = "Too many requests. Please try again later.",
-                        RetryAfter = Math.Ceiling(retryAfter.TotalSeconds)
-                    };
-
-                    await context.Response.WriteAsJsonAsync(response);
-                    return;
+                    // Fallback: If Redis is unavailable, allow all requests (fail-open)
+                    _logger.LogWarning("[RateLimit] ⚠️ Redis rate limiter unavailable. Allowing request (fail-open).");
                 }
             }
 
             await _next(context);
+        }
+
+        private static string GetClientIdentifier(HttpContext context)
+        {
+            // Use IP address as client identifier
+            var ip = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            
+            // For production behind proxy/load balancer, check forwarded headers
+            if (context.Request.Headers.TryGetValue("X-Forwarded-For", out var forwardedFor))
+            {
+                ip = forwardedFor.ToString().Split(',')[0].Trim();
+            }
+
+            return ip;
         }
     }
 }

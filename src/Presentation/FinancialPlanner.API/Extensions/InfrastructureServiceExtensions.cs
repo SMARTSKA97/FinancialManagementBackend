@@ -3,10 +3,12 @@ using FinancialPlanner.Application.Contracts;
 using FinancialPlanner.Domain.Entities;
 using FinancialPlanner.Infrastructure.Persistence;
 using FinancialPlanner.Infrastructure.Repositories;
+using FinancialPlanner.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 using System.Text;
 
 namespace FinancialPlanner.API.Extensions;
@@ -65,7 +67,31 @@ public static class InfrastructureServiceExtensions
             };
         });
 
-        // 5. Register Repositories and the Unit of Work
+        // 5. Register Redis Connection (Upstash)
+        var redisConnectionString = configuration.GetConnectionString("Redis");
+        
+        if (!string.IsNullOrEmpty(redisConnectionString) && !redisConnectionString.Contains("YOUR_UPSTASH"))
+        {
+            try
+            {
+                var redisConnection = ConnectionMultiplexer.Connect(redisConnectionString);
+                services.AddSingleton<IConnectionMultiplexer>(redisConnection);
+                services.AddScoped<IRedisService, RedisService>();
+                services.AddSingleton<IRedisRateLimiter, RedisRateLimiter>(); // ⭐ Rate limiter (Singleton for Middleware)
+                services.AddScoped<ICacheService, HybridCacheService>(); // ⭐ Hybrid Cache (L1 Memory + L2 Redis)
+                Console.WriteLine("[Redis] ✅ Connection established successfully");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Redis] ⚠️ Connection failed: {ex.Message}. Running without Redis.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("[Redis] ⚠️ Connection string not configured.");
+        }
+
+        // 6. Register Repositories and the Unit of Work
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<ITransactionRepository, TransactionRepository>();

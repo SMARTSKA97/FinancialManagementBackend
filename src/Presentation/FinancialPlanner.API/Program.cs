@@ -16,17 +16,19 @@ builder.Services.AddPresentationLayerServices(builder.Configuration);
 // Add Memory Cache for Custom Rate Limiting
 builder.Services.AddMemoryCache();
 
+// Configure for Render.com reverse proxy (Cloudflare CDN + Render proxy)
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
-    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-    options.KnownIPNetworks.Clear();
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    // Trust all proxies - required for cloud platforms like Render.com
+    options.KnownNetworks.Clear();
     options.KnownProxies.Clear();
+    options.ForwardLimit = 2; // Limit to 2 proxy hops (Cloudflare + Render)
 });
 
 var app = builder.Build();
 
 // --- Middleware Pipeline ---
-
 // 1. Forwarded Headers (Must be first to identify client IP)
 app.UseForwardedHeaders();
 

@@ -21,7 +21,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-	  <VersionPrefix>3.2.1</VersionPrefix>
+	  <VersionPrefix>3.2.2</VersionPrefix>
 	  <!-- Use a hyphen for the date format to comply with NuGet versioning rules -->
 	  <VersionSuffix>beta-$([System.DateTime]::UtcNow.ToString(yyyyMMdd-HHmm))</VersionSuffix>
   </PropertyGroup>

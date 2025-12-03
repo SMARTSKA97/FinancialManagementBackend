@@ -34,7 +34,17 @@ public class SessionValidationMiddleware
                     }
 
                     // 2. Validate IP Address (Session Hijacking Protection)
-                    var currentIp = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                    string currentIp;
+                    if (context.Request.Headers.ContainsKey("X-Forwarded-For"))
+                    {
+                        var forwardedHeader = context.Request.Headers["X-Forwarded-For"].ToString();
+                        currentIp = forwardedHeader.Split(',')[0].Trim();
+                    }
+                    else
+                    {
+                        currentIp = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                    }
+
                     // Note: In a real-world scenario, IP validation might be too strict for mobile users switching networks.
                     // We can relax this or use subnet matching if needed. For now, strict match.
                     if (user.LastKnownIp != currentIp)

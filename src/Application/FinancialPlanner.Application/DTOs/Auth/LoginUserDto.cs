@@ -9,4 +9,5 @@ public class LoginUserDto
 
     [Required]
     public required string Password { get; set; }
+    public bool ForceLogin { get; set; } = false;
 }

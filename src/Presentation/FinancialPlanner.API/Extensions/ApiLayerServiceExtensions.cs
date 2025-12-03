@@ -1,6 +1,9 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using FinancialPlanner.API.Filters;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 namespace FinancialPlanner.API.Extensions;
 
@@ -8,31 +11,50 @@ public static class ApiLayerServiceExtensions
 {
     public static IServiceCollection AddApiLayerServices(this IServiceCollection services)
     {
+        services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            options.AddPolicy("login", context => RateLimitPartition.GetFixedWindowLimiter(
+                partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                factory: _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 5,
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                    QueueLimit = 0
+                }));
+        });
+
         services.AddCors(options =>
         {
             options.AddPolicy(name: "AllowSpecificOrigins",
                               policy =>
                               {
-                                  policy.WithOrigins("http://localhost:4200")
+                                  policy.WithOrigins(
+                                            "http://localhost:4200",
+                                            "https://financialplannerfrontend.karmakarsubhrajit680.workers.dev"
+                                        )
                                         .AllowAnyHeader()
-                                        .AllowAnyMethod();
+                                        .AllowAnyMethod()
+                                        .AllowCredentials();
                               });
         });
 
-        services.AddControllers().AddJsonOptions(options =>
+        services.AddControllers(options =>
+        {
+            options.Filters.Add<ValidationFilter>();
+        }).AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         });
 
-        // This is the crucial line that was missing. It registers the service
-        // that allows the DbContext to access the current HttpContext.
         services.AddHttpContextAccessor();
 
         services.AddEndpointsApiExplorer();
 
         var informationalVersion = Assembly.GetExecutingAssembly()
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
-            .InformationalVersion;
+            .InformationalVersion ?? "1.0.0";
 
         services.AddSwaggerGen(options =>
         {
@@ -71,4 +93,3 @@ public static class ApiLayerServiceExtensions
         return services;
     }
 }
-

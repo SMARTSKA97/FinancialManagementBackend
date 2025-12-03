@@ -9,4 +9,5 @@ public abstract class AuditLog
     public string Action { get; set; } = string.Empty; // Removed 'required', provided default
     public string ChangedByUserId { get; set; } = string.Empty; // Removed 'required', provided default
     public DateTime ChangedAt { get; set; } = DateTime.UtcNow;
+    public string LogHash { get; set; } = string.Empty;
 }

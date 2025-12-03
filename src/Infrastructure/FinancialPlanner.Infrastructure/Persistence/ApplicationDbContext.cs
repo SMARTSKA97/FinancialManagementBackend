@@ -43,7 +43,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     private void SetAuditProperties()
     {
-        var entries = ChangeTracker.Entries<BaseEntity>();
+        // FIX: Track IAuditable instead of BaseEntity to catch ApplicationUser too
+        var entries = ChangeTracker.Entries<IAuditable>();
         foreach (var entry in entries)
         {
             if (entry.State == EntityState.Added)
@@ -60,7 +61,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     private List<AuditEntry> OnBeforeSaveChanges()
     {
-        var entries = ChangeTracker.Entries<BaseEntity>().ToList();
+        // FIX: Use IAuditable here as well
+        var entries = ChangeTracker.Entries<IAuditable>().ToList();
         var auditEntries = new List<AuditEntry>();
         var userId = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier) ?? "system";
 
@@ -70,6 +72,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 continue;
 
             var auditEntry = new AuditEntry(entry) { TableName = entry.Metadata.GetTableName()!, UserId = userId };
+
             foreach (var property in entry.Properties)
             {
                 if (property.IsTemporary) continue;
@@ -114,10 +117,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
         foreach (var auditEntry in auditEntries)
         {
-            int entityId = Convert.ToInt32(auditEntry.Entry.Property("Id").CurrentValue);
-            var oldData = auditEntry.OldValues.Count == 0 ? null : JsonSerializer.Serialize(auditEntry.OldValues);
-            var newData = auditEntry.NewValues.Count == 0 ? null : JsonSerializer.Serialize(auditEntry.NewValues);
-
+            // FIX: Check if entity is supported for logging BEFORE accessing ID
             AuditLog? log = auditEntry.Entry.Entity switch
             {
                 Account _ => new AccountLog(),
@@ -128,17 +128,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 _ => null
             };
 
-            if (log != null)
-            {
-                log.EntityId = entityId;
-                log.Action = auditEntry.Action;
-                log.OldData = oldData;
-                log.NewData = newData;
-                log.ChangedByUserId = auditEntry.UserId;
-                log.ChangedAt = DateTime.UtcNow;
+            if (log == null) continue;
 
-                await this.AddAsync(log);
-            }
+            // Safe to access ID now
+            int entityId = Convert.ToInt32(auditEntry.Entry.Property("Id").CurrentValue);
+            var oldData = auditEntry.OldValues.Count == 0 ? null : JsonSerializer.Serialize(auditEntry.OldValues);
+            var newData = auditEntry.NewValues.Count == 0 ? null : JsonSerializer.Serialize(auditEntry.NewValues);
+
+            log.EntityId = entityId;
+            log.Action = auditEntry.Action;
+            log.OldData = oldData;
+            log.NewData = newData;
+            log.ChangedByUserId = auditEntry.UserId;
+            log.ChangedAt = DateTime.UtcNow;
+
+            await this.AddAsync(log);
         }
         // Save the log entries in a separate transaction
         await base.SaveChangesAsync();
@@ -149,7 +153,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         base.OnModelCreating(builder);
 
         // --- IDENTITY SCHEMA ---
-        builder.Entity<ApplicationUser>(e => e.ToTable("Users", "identity"));
+        builder.Entity<ApplicationUser>(e => {
+            e.ToTable("Users", "identity");
+            e.OwnsMany(p => p.RefreshTokens, a =>
+            {
+                a.ToTable("RefreshTokens", "identity");
+                a.WithOwner().HasForeignKey("UserId");
+            });
+        });
         builder.Entity<IdentityRole>(e => e.ToTable("Roles", "identity"));
         builder.Entity<IdentityUserRole<string>>(e => e.ToTable("UserRoles", "identity"));
         builder.Entity<IdentityUserClaim<string>>(e => e.ToTable("UserClaims", "identity"));
@@ -182,4 +193,3 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<FeedbackLog>(e => e.ToTable("FeedbackLogs", "feedback"));
     }
 }
-

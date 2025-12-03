@@ -14,4 +14,5 @@ public class Transaction : BaseEntity
 
     public int? TransactionCategoryId { get; set; }
     public TransactionCategory? TransactionCategory { get; set; } // Navigation property
+    public string DataHash { get; set; } = string.Empty;
 }

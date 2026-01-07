@@ -1,4 +1,5 @@
 ﻿using FinancialPlanner.Application;
+using FinancialPlanner.Application.Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -11,14 +12,26 @@ public abstract class BaseController : ControllerBase
 {
     protected string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-    protected IActionResult HandleApiResponse<T>(ApiResponse<T> response)
+    protected IActionResult HandleResult<T>(Result<T> result)
     {
-        if (response.IsSuccess)
+        if (result.IsSuccess)
         {
-            return Ok(response);
+            return result.Value is null ? NotFound() : Ok(ApiResult<T>.Success(result.Value));
         }
 
-        // You can expand this to check for specific error types if needed
-        return BadRequest(response);
+        // Return 200 OK even for failures, wrapped in the Result object to mask the error status.
+        // We MUST NOT return 'result' directly because the serializer will try to access 'Value', which throws on failure.
+        return Ok(ApiResult<T>.Failure(result.Error)); 
     }
+
+    protected IActionResult HandleResult(Result result)
+    {
+        if (result.IsSuccess)
+        {
+            return Ok(result);
+        }
+
+        return Ok(result);
+    }
+
 }

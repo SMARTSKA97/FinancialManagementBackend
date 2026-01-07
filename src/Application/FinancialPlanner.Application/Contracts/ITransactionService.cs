@@ -1,12 +1,13 @@
-﻿using FinancialPlanner.Application.DTOs.Transactions;
+﻿using FinancialPlanner.Application.Common.Models;
+using FinancialPlanner.Application.DTOs.Transactions;
 
 namespace FinancialPlanner.Application.Contracts;
 
 public interface ITransactionService
 {
-    Task<ApiResponse<PaginatedResult<TransactionDto>>> GetTransactionsAsync(string userId, int accountId, QueryParameters queryParams);
-    Task<ApiResponse<TransactionDto>> UpsertTransactionAsync(string userId, int accountId, UpsertTransactionDto dto);
-    Task<ApiResponse<bool>> DeleteTransactionAsync(string userId, int accountId, int transactionId);
-    Task<ApiResponse<bool>> CreateTransferAsync(string userId, int sourceAccountId, CreateTransferDto dto);
-    Task<ApiResponse<bool>> SwitchAccountAsync(string userId, int transactionId, int destinationAccountId);
+    Task<Result<PaginatedResult<TransactionDto>>> GetTransactionsAsync(string userId, int accountId, QueryParameters queryParams);
+    Task<Result<TransactionDto>> UpsertTransactionAsync(string userId, int accountId, UpsertTransactionDto dto);
+    Task<Result<bool>> DeleteTransactionAsync(string userId, int accountId, int transactionId);
+    Task<Result<bool>> CreateTransferAsync(string userId, int sourceAccountId, CreateTransferDto dto);
+    Task<Result<bool>> SwitchAccountAsync(string userId, int transactionId, int destinationAccountId);
 }

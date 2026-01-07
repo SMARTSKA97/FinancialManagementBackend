@@ -21,21 +21,21 @@ public class TransactionCategoriesController : BaseController
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var response = await _transactionCategoryService.GetAllAsync(UserId!);
-        return HandleApiResponse(response);
+        var result = await _transactionCategoryService.GetAllAsync(UserId!);
+        return HandleResult(result);
     }
 
     [HttpPost("upsert")]
     public async Task<IActionResult> Upsert([FromBody] UpsertTransactionCategoryDto dto)
     {
-        var response = await _transactionCategoryService.UpsertAsync(UserId!, dto);
-        return HandleApiResponse(response);
+        var result = await _transactionCategoryService.UpsertAsync(UserId!, dto);
+        return HandleResult(result);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var response = await _transactionCategoryService.DeleteAsync(UserId!, id);
-        return HandleApiResponse(response);
+        var result = await _transactionCategoryService.DeleteAsync(UserId!, id);
+        return HandleResult(result);
     }
 }

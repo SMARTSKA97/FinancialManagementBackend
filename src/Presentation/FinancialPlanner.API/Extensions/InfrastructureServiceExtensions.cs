@@ -2,7 +2,7 @@
 using FinancialPlanner.Application.Contracts;
 using FinancialPlanner.Domain.Entities;
 using FinancialPlanner.Infrastructure.Persistence;
-using FinancialPlanner.Infrastructure.Repositories;
+using FinancialPlanner.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -65,11 +65,8 @@ public static class InfrastructureServiceExtensions
             };
         });
 
-        // 5. Register Repositories and the Unit of Work
-        services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-        services.AddScoped<IAccountRepository, AccountRepository>();
-        services.AddScoped<ITransactionRepository, TransactionRepository>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        // 5. Register Services
+        services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
         return services;
     }

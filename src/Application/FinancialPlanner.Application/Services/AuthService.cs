@@ -1,4 +1,5 @@
-﻿using FinancialPlanner.Application.Contracts;
+﻿using FinancialPlanner.Application.Common.Models;
+using FinancialPlanner.Application.Contracts;
 using FinancialPlanner.Application.DTOs.Auth;
 using FinancialPlanner.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -26,7 +27,7 @@ public class AuthService : IAuthService
         _logger = logger;
     }
 
-    public async Task<ApiResponse<string>> RegisterAsync(RegisterUserDto dto)
+    public async Task<Result<string>> RegisterAsync(RegisterUserDto dto)
     {
         var user = new ApplicationUser
         {
@@ -42,14 +43,14 @@ public class AuthService : IAuthService
         {
             var errors = result.Errors.Select(e => e.Description).ToList();
             _logger.LogWarning("User registration failed for {Email}. Errors: {Errors}", dto.Email, string.Join(", ", errors));
-            return ApiResponse<string>.Failure("User registration failed.", errors);
+            return Result.Failure<string>(new Error("Auth.RegistrationFailed", $"User registration failed: {string.Join(", ", errors)}"));
         }
 
         _logger.LogInformation("User registered successfully: {Email}", dto.Email);
-        return ApiResponse<string>.Success("User registered successfully.");
+        return Result.Success("User registered successfully.");
     }
 
-    public async Task<ApiResponse<LoginResponseDto>> LoginAsync(LoginUserDto dto, string ipAddress, string userAgent)
+    public async Task<Result<LoginResponseDto>> LoginAsync(LoginUserDto dto, string ipAddress, string userAgent)
     {
         var user = await _userManager.Users
             .Include(u => u.RefreshTokens) // Important: Load existing tokens
@@ -58,14 +59,14 @@ public class AuthService : IAuthService
         if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
         {
             _logger.LogWarning("Failed login attempt for {UserName} from IP {IpAddress}", dto.UserName, ipAddress);
-            return ApiResponse<LoginResponseDto>.Failure("Invalid username or password.");
+            return Result.Failure<LoginResponseDto>(new Error("Auth.InvalidCredentials", "Invalid username or password."));
         }
 
         // Concurrent Login Check
         if (!string.IsNullOrEmpty(user.CurrentSessionId) && !dto.ForceLogin)
         {
             _logger.LogWarning("Concurrent login attempt for {UserName} from IP {IpAddress}. Existing session active.", dto.UserName, ipAddress);
-            return ApiResponse<LoginResponseDto>.Failure("User is already logged in on another device. Do you want to continue here?", new List<string> { "ConcurrentLogin" });
+            return Result.Failure<LoginResponseDto>(new Error("Auth.ConcurrentLogin", "User is already logged in on another device. Do you want to continue here?"));
         }
 
         // Start New Session
@@ -98,11 +99,11 @@ public class AuthService : IAuthService
         if (!updateResult.Succeeded)
         {
             _logger.LogError("Login failed for {UserName} during DB update. Errors: {Errors}", dto.UserName, string.Join(", ", updateResult.Errors.Select(e => e.Description)));
-            return ApiResponse<LoginResponseDto>.Failure("Login failed.", updateResult.Errors.Select(e => e.Description).ToList());
+            return Result.Failure<LoginResponseDto>(new Error("Auth.UpdateFailed", $"Login failed: {string.Join(", ", updateResult.Errors.Select(e => e.Description))}"));
         }
 
         _logger.LogInformation("User {UserName} logged in successfully from IP {IpAddress}", dto.UserName, ipAddress);
-        return ApiResponse<LoginResponseDto>.Success(new LoginResponseDto
+        return Result.Success(new LoginResponseDto
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken.Token,
@@ -110,7 +111,7 @@ public class AuthService : IAuthService
         });
     }
 
-    public async Task<ApiResponse<LoginResponseDto>> RefreshTokenAsync(string token, string ipAddress)
+    public async Task<Result<LoginResponseDto>> RefreshTokenAsync(string token, string ipAddress)
     {
         var user = await _userManager.Users
             .Include(u => u.RefreshTokens)
@@ -119,7 +120,7 @@ public class AuthService : IAuthService
         if (user == null)
         {
             _logger.LogWarning("Refresh token attempt failed. Token not found or user does not exist. IP: {IpAddress}", ipAddress);
-            return ApiResponse<LoginResponseDto>.Failure("Invalid token.");
+            return Result.Failure<LoginResponseDto>(new Error("Auth.InvalidToken", "Invalid token."));
         }
 
         var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
@@ -127,7 +128,7 @@ public class AuthService : IAuthService
         if (!refreshToken.IsActive)
         {
             _logger.LogWarning("Refresh token attempt failed. Token is inactive/revoked. User: {UserName}, IP: {IpAddress}", user.UserName, ipAddress);
-            return ApiResponse<LoginResponseDto>.Failure("Invalid token.");
+            return Result.Failure<LoginResponseDto>(new Error("Auth.InvalidToken", "Invalid token."));
         }
 
         // Revoke the old token (Rotation)
@@ -149,7 +150,7 @@ public class AuthService : IAuthService
 
         _logger.LogInformation("Token refreshed successfully for user {UserName} from IP {IpAddress}", user.UserName, ipAddress);
 
-        return ApiResponse<LoginResponseDto>.Success(new LoginResponseDto
+        return Result.Success(new LoginResponseDto
         {
             AccessToken = newAccessToken,
             RefreshToken = newRefreshToken.Token,
@@ -157,14 +158,14 @@ public class AuthService : IAuthService
         });
     }
 
-    public async Task<ApiResponse<bool>> LogoutAsync(string token, string ipAddress)
+    public async Task<Result<bool>> LogoutAsync(string token, string ipAddress)
     {
         // Find the user who owns this token
         var user = await _userManager.Users
             .Include(u => u.RefreshTokens)
             .SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
 
-        if (user == null) return ApiResponse<bool>.Success(true); // Already logged out effectively
+        if (user == null) return Result.Success(true); // Already logged out effectively
 
         var refreshToken = user.RefreshTokens.SingleOrDefault(x => x.Token == token);
         if (refreshToken != null && refreshToken.IsActive)
@@ -181,7 +182,7 @@ public class AuthService : IAuthService
             _logger.LogInformation("Session terminated for {UserName} from IP {IpAddress}", user.UserName, ipAddress);
         }
 
-        return ApiResponse<bool>.Success(true, "Logged out successfully.");
+        return Result.Success(true);
     }
 
     private string GenerateJwtToken(ApplicationUser user, string sessionId)

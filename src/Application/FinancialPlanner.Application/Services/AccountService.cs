@@ -1,66 +1,99 @@
 ﻿using AutoMapper;
+using FinancialPlanner.Application.Common.Models;
 using FinancialPlanner.Application.Contracts;
 using FinancialPlanner.Application.DTOs.Accounts;
 using FinancialPlanner.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinancialPlanner.Application.Services;
 
 public class AccountService : IAccountService
 {
-    private readonly IUnitOfWork _unitOfWork; // Use Unit of Work
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public AccountService(IUnitOfWork unitOfWork, IMapper mapper)
+    public AccountService(IApplicationDbContext context, IMapper mapper)
     {
-        _unitOfWork = unitOfWork;
+        _context = context;
         _mapper = mapper;
     }
 
-    public async Task<ApiResponse<PaginatedResult<AccountDto>>> GetPagedAccountsAsync(string userId, QueryParameters queryParams)
+    public async Task<Result<PaginatedResult<AccountDto>>> GetPagedAccountsAsync(string userId, QueryParameters queryParams)
     {
-        var pagedData = await _unitOfWork.AccountRepository.GetPagedAccountsAsync(userId, queryParams);
+        var queryable = _context.Accounts
+            .Where(a => a.UserId == userId)
+            .Include(a => a.AccountCategory)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(queryParams.GlobalSearch))
+        {
+            var search = queryParams.GlobalSearch.Trim();
+            queryable = queryable.Where(a =>
+                a.Name.Contains(search) ||
+                (a.AccountCategory != null && a.AccountCategory.Name.Contains(search)));
+        }
+
+        var totalRecords = await queryable.CountAsync();
+
+        var items = await queryable
+            .OrderBy(a => a.Name)
+            .Skip((queryParams.PageNumber - 1) * queryParams.PageSize)
+            .Take(queryParams.PageSize)
+            .ToListAsync();
+
         var pagedDto = new PaginatedResult<AccountDto>(
-            _mapper.Map<List<AccountDto>>(pagedData.Data),
-            pagedData.TotalRecords,
-            pagedData.PageNumber,
-            pagedData.PageSize
+            _mapper.Map<List<AccountDto>>(items),
+            totalRecords,
+            queryParams.PageNumber,
+            queryParams.PageSize
         );
-        return ApiResponse<PaginatedResult<AccountDto>>.Success(pagedDto);
+        return Result.Success(pagedDto);
     }
 
-    public async Task<ApiResponse<AccountDto>> UpsertAccountAsync(string userId, UpsertAccountDto dto)
+    public async Task<Result<AccountDto>> UpsertAccountAsync(string userId, UpsertAccountDto dto)
     {
-        Account account;
+        Account? account = null;
+
         if (dto.Id.HasValue && dto.Id > 0)
         {
-            account = (await _unitOfWork.AccountRepository.GetByIdAsync(dto.Id.Value, true))!;
+            // Edit Mode
+            account = await _context.Accounts
+                .Include(a => a.AccountCategory)
+                .FirstOrDefaultAsync(a => a.Id == dto.Id);
+
             if (account == null || account.UserId != userId)
-                return ApiResponse<AccountDto>.Failure("Account not found.");
+                return Result.Failure<AccountDto>(new Error("Account.NotFound", "Account not found."));
+
             _mapper.Map(dto, account);
-            _unitOfWork.AccountRepository.Upsert(account); // Stage the update
+            _context.Accounts.Update(account);
         }
         else
         {
+            // Create Mode
             account = _mapper.Map<Account>(dto);
             account.UserId = userId;
-            _unitOfWork.AccountRepository.Upsert(account); // Stage the create
+            _context.Accounts.Add(account);
         }
 
-        await _unitOfWork.CompleteAsync(); // Save all changes
+        await _context.SaveChangesAsync();
+
+        // Reload to get populated fields (like Category name if needed, or DB generated values)
+        // Note: For simple update, memory object is usually enough, but if we need relations:
+        // account = await _context.Accounts.Include(a => a.AccountCategory).FirstAsync(a => a.Id == account.Id); 
 
         var resultDto = _mapper.Map<AccountDto>(account);
-        return ApiResponse<AccountDto>.Success(resultDto);
+        return Result.Success(resultDto);
     }
 
-    public async Task<ApiResponse<bool>> DeleteAccountAsync(string userId, int accountId)
+    public async Task<Result<bool>> DeleteAccountAsync(string userId, int accountId)
     {
-        var account = await _unitOfWork.AccountRepository.GetByIdAsync(accountId);
+        var account = await _context.Accounts.FindAsync(accountId);
         if (account == null || account.UserId != userId)
-            return ApiResponse<bool>.Failure("Account not found.");
+            return Result.Failure<bool>(new Error("Account.NotFound", "Account not found."));
 
-        _unitOfWork.AccountRepository.Delete(account); // Stage the delete
-        await _unitOfWork.CompleteAsync(); // Save all changes
+        _context.Accounts.Remove(account);
+        await _context.SaveChangesAsync();
 
-        return ApiResponse<bool>.Success(true, "Account deleted successfully.");
+        return Result.Success(true);
     }
 }

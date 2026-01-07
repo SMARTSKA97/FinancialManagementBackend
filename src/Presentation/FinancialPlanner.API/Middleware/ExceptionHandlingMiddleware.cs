@@ -28,14 +28,21 @@ public class ExceptionHandlingMiddleware
         }
     }
 
-    private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        // User Request: Return 200 OK even for unhandled exceptions to mask 500 errors.
+        context.Response.StatusCode = (int)HttpStatusCode.OK;
 
-        var response = ApiResponse<object>.Failure("An internal server error has occurred. Please try again later.");
-        var jsonResponse = JsonSerializer.Serialize(response);
+        // User Request: Return 200 OK even for unhandled exceptions to mask 500 errors.
+        context.Response.StatusCode = (int)HttpStatusCode.OK;
 
-        return context.Response.WriteAsync(jsonResponse);
+        var error = new Error("Server.Exception", exception.Message);
+        var response = ApiResult<object>.Failure(error);
+
+        var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        var jsonResponse = JsonSerializer.Serialize(response, jsonOptions);
+
+        await context.Response.WriteAsync(jsonResponse);
     }
 }

@@ -19,8 +19,8 @@ public class FeedbackController : BaseController
     [AllowAnonymous]   // Allow anyone to submit feedback
     public async Task<IActionResult> Upsert([FromBody] CreateFeedbackDto dto)
     {
-        var response = await _feedbackService.CreateFeedbackAsync(dto);
-        return HandleApiResponse(response);
+        var result = await _feedbackService.CreateFeedbackAsync(dto);
+        return HandleResult(result);
     }
 }
 

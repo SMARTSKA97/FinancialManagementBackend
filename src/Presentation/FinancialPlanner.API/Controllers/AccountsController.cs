@@ -18,21 +18,21 @@ public class AccountsController : BaseController
     [HttpPost("search")] // Paginated view
     public async Task<IActionResult> GetPaged([FromBody] QueryParameters queryParams)
     {
-        var response = await _accountService.GetPagedAccountsAsync(UserId, queryParams);
-        return HandleApiResponse(response);
+        var result = await _accountService.GetPagedAccountsAsync(UserId, queryParams);
+        return HandleResult(result);
     }
 
     [HttpPost("upsert")] // Create and Update
     public async Task<IActionResult> Upsert([FromBody] UpsertAccountDto dto)
     {
-        var response = await _accountService.UpsertAccountAsync(UserId, dto);
-        return HandleApiResponse(response);
+        var result = await _accountService.UpsertAccountAsync(UserId, dto);
+        return HandleResult(result);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var response = await _accountService.DeleteAccountAsync(UserId, id);
-        return HandleApiResponse(response);
+        var result = await _accountService.DeleteAccountAsync(UserId, id);
+        return HandleResult(result);
     }
 }

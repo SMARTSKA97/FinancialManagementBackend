@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FinancialPlanner.Application.Common.Models;
 using FinancialPlanner.Application.Contracts;
 using FinancialPlanner.Application.DTOs.AccountCategory;
 using FinancialPlanner.Application.DTOs.Categories;
@@ -10,61 +11,66 @@ namespace FinancialPlanner.Application.Services;
 
 public class AccountCategoryService : ICategoryService<AccountCategoryDto, UpsertAccountCategoryDto>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public AccountCategoryService(IUnitOfWork unitOfWork, IMapper mapper)
+    public AccountCategoryService(IApplicationDbContext context, IMapper mapper)
     {
-        _unitOfWork = unitOfWork;
+        _context = context;
         _mapper = mapper;
     }
 
-    public async Task<ApiResponse<IReadOnlyList<AccountCategoryDto>>> GetAllAsync(string userId)
+    public async Task<Result<IReadOnlyList<AccountCategoryDto>>> GetAllAsync(string userId)
     {
-        var allCategories = await _unitOfWork.AccountCategoryRepository.FindAsync(c => c.UserId == userId);
+        var allCategories = await _context.AccountCategories
+            .Where(c => c.UserId == userId)
+            .ToListAsync();
+        
         var mapped = _mapper.Map<IReadOnlyList<AccountCategoryDto>>(allCategories);
-        return ApiResponse<IReadOnlyList<AccountCategoryDto>>.Success(mapped);
+        return Result.Success(mapped);
     }
 
-    public async Task<ApiResponse<AccountCategoryDto>> UpsertAsync(string userId, UpsertAccountCategoryDto dto)
+    public async Task<Result<AccountCategoryDto>> UpsertAsync(string userId, UpsertAccountCategoryDto dto)
     {
-        AccountCategory category;
+        AccountCategory? category = null;
+
         if (dto.Id.HasValue && dto.Id > 0)
         {
-            var existingCategory = await _unitOfWork.AccountCategoryRepository.GetByIdAsync(dto.Id.Value);
-            if (existingCategory == null || existingCategory.UserId != userId)
-                return ApiResponse<AccountCategoryDto>.Failure("Category not found.");
-            category = existingCategory;
+            category = await _context.AccountCategories.FindAsync(dto.Id.Value);
+
+            if (category == null || category.UserId != userId)
+                return Result.Failure<AccountCategoryDto>(new Error("Category.NotFound", "Category not found."));
+
             category.Name = dto.Name;
-            _unitOfWork.AccountCategoryRepository.Upsert(category);
+            _context.AccountCategories.Update(category);
         }
         else
         {
             category = _mapper.Map<AccountCategory>(dto);
             category.UserId = userId;
-            _unitOfWork.AccountCategoryRepository.Upsert(category);
+            _context.AccountCategories.Add(category);
         }
 
         try
         {
-            await _unitOfWork.CompleteAsync();
+            await _context.SaveChangesAsync();
             var resultDto = _mapper.Map<AccountCategoryDto>(category);
-            return ApiResponse<AccountCategoryDto>.Success(resultDto);
+            return Result.Success(resultDto);
         }
         catch (DbUpdateException ex) when (ex.InnerException is PostgresException postgresEx && postgresEx.SqlState == "23505")
         {
-            return ApiResponse<AccountCategoryDto>.Failure("A category with this name already exists.");
+            return Result.Failure<AccountCategoryDto>(new Error("Category.Duplicate", "A category with this name already exists."));
         }
     }
 
-    public async Task<ApiResponse<bool>> DeleteAsync(string userId, int id)
+    public async Task<Result<bool>> DeleteAsync(string userId, int id)
     {
-        var category = await _unitOfWork.AccountCategoryRepository.GetByIdAsync(id);
+        var category = await _context.AccountCategories.FindAsync(id);
         if (category == null || category.UserId != userId)
-            return ApiResponse<bool>.Failure("Category not found.");
+            return Result.Failure<bool>(new Error("Category.NotFound", "Category not found."));
 
-        _unitOfWork.AccountCategoryRepository.Delete(category);
-        await _unitOfWork.CompleteAsync();
-        return ApiResponse<bool>.Success(true, "Category deleted successfully.");
+        _context.AccountCategories.Remove(category);
+        await _context.SaveChangesAsync();
+        return Result.Success(true);
     }
 }

@@ -5,7 +5,7 @@ using FinancialPlanner.Application.DTOs.AccountCategory;
 using FinancialPlanner.Application.DTOs.Categories;
 using FinancialPlanner.Application.DTOs.TransactionCategory;
 using FinancialPlanner.Application.Services;
-using FinancialPlanner.Infrastructure.Repositories;
+using FinancialPlanner.Application.Services;
 
 namespace FinancialPlanner.API.Extensions;
 
@@ -22,6 +22,8 @@ public static class ApplicationServiceExtensions
 
         services.AddScoped<ICategoryService<AccountCategoryDto, UpsertAccountCategoryDto>, AccountCategoryService>();
         services.AddScoped<ICategoryService<TransactionCategoryDto, UpsertTransactionCategoryDto>, TransactionCategoryService>();
+
+        services.AddScoped<IDashboardService, DashboardService>();
 
         return services;
     }

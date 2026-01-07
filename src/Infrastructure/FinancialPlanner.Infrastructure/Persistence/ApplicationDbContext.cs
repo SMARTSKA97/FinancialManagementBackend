@@ -1,4 +1,5 @@
-﻿using FinancialPlanner.Domain.Entities;
+﻿using FinancialPlanner.Application.Contracts;
+using FinancialPlanner.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -9,7 +10,7 @@ using System.Text.Json;
 
 namespace FinancialPlanner.Infrastructure.Persistence;
 
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 

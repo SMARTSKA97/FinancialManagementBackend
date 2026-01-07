@@ -30,8 +30,8 @@ public class AuthController : BaseController
     [EnableRateLimiting("login")]
     public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
     {
-        var response = await _authService.RegisterAsync(dto);
-        return HandleApiResponse(response);
+        var result = await _authService.RegisterAsync(dto);
+        return HandleResult(result);
     }
 
     [HttpPost("login")]
@@ -40,8 +40,8 @@ public class AuthController : BaseController
     public async Task<IActionResult> Login([FromBody] LoginUserDto dto)
     {
         var userAgent = Request.Headers["User-Agent"].ToString();
-        var response = await _authService.LoginAsync(dto, GetIpAddress(), userAgent);
-        return HandleApiResponse(response);
+        var result = await _authService.LoginAsync(dto, GetIpAddress(), userAgent);
+        return HandleResult(result);
     }
 
     [HttpPost("refresh")]
@@ -49,8 +49,8 @@ public class AuthController : BaseController
     [EnableRateLimiting("login")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenDto dto)
     {
-        var response = await _authService.RefreshTokenAsync(dto.RefreshToken, GetIpAddress());
-        return HandleApiResponse(response);
+        var result = await _authService.RefreshTokenAsync(dto.RefreshToken, GetIpAddress());
+        return HandleResult(result);
     }
 
     [HttpPost("logout")]
@@ -58,7 +58,7 @@ public class AuthController : BaseController
     [EnableRateLimiting("login")]
     public async Task<IActionResult> Logout([FromBody] RefreshTokenDto dto)
     {
-        var response = await _authService.LogoutAsync(dto.RefreshToken, GetIpAddress());
-        return HandleApiResponse(response);
+        var result = await _authService.LogoutAsync(dto.RefreshToken, GetIpAddress());
+        return HandleResult(result);
     }
 }

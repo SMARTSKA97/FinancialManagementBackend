@@ -22,23 +22,23 @@ public class AccountCategoriesController : BaseController
     public async Task<IActionResult> GetAll()
     {
         // Call the service
-        var response = await _accountCategoryService.GetAllAsync(UserId);
-        return HandleApiResponse(response);
+        var result = await _accountCategoryService.GetAllAsync(UserId);
+        return HandleResult(result);
     }
 
     [HttpPost("upsert")]
     public async Task<IActionResult> Upsert([FromBody] UpsertAccountCategoryDto dto)
     {
         // Call the service (this will now execute the try...catch block)
-        var response = await _accountCategoryService.UpsertAsync(UserId, dto);
-        return HandleApiResponse(response);
+        var result = await _accountCategoryService.UpsertAsync(UserId, dto);
+        return HandleResult(result);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         // Call the service
-        var response = await _accountCategoryService.DeleteAsync(UserId, id);
-        return HandleApiResponse(response);
+        var result = await _accountCategoryService.DeleteAsync(UserId, id);
+        return HandleResult(result);
     }
 }

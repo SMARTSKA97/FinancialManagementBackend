@@ -32,7 +32,7 @@ public static class ApiLayerServiceExtensions
                               {
                                   policy.WithOrigins(
                                             "http://localhost:4200",
-                                            "https://pages.dev"
+                                            "https://financialplanner.pages.dev"
                                         )
                                         .AllowAnyHeader()
                                         .AllowAnyMethod()

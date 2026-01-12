@@ -3,8 +3,8 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY . .
 # publish ONLY the API project
-RUN dotnet restore ./src/Presentation/API/API.csproj
-RUN dotnet publish ./src/Presentation/API/API.csproj -c Release -o /app /p:UseAppHost=false
+RUN dotnet restore ./src/Presentation/API.csproj
+RUN dotnet publish ./src/Presentation/API.csproj -c Release -o /app /p:UseAppHost=false
 
 # --- runtime stage (.NET 10 ASP.NET) ---
 FROM mcr.microsoft.com/dotnet/aspnet:10.0

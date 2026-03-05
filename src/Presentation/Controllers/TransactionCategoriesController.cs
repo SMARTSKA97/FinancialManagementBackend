@@ -1,5 +1,6 @@
 ﻿using Application;
 using Application.Contracts;
+using Application.DTOs;
 using Application.DTOs.Categories;
 using Application.DTOs.TransactionCategory;
 using Microsoft.AspNetCore.Authorization;
@@ -18,6 +19,13 @@ public class TransactionCategoriesController : BaseController
         _transactionCategoryService = transactionCategoryService;
     }
 
+    [HttpPost("search")]
+    public async Task<IActionResult> GetPaged([FromBody] QueryParameters queryParams)
+    {
+        var result = await _transactionCategoryService.GetPagedAsync(UserId!, queryParams);
+        return HandleResult(result);
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -32,10 +40,10 @@ public class TransactionCategoriesController : BaseController
         return HandleResult(result);
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    [HttpPost("delete")]
+    public async Task<IActionResult> Delete([FromBody] DeleteDto dto)
     {
-        var result = await _transactionCategoryService.DeleteAsync(UserId!, id);
+        var result = await _transactionCategoryService.DeleteAsync(UserId!, dto.Id);
         return HandleResult(result);
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-[Route("api/accounts/{accountId}/[controller]")]
+[Route("api/[controller]")]
 public class TransactionsController : BaseController
 {
     private readonly ITransactionService _transactionService;
@@ -17,37 +17,37 @@ public class TransactionsController : BaseController
     }
 
     [HttpPost("search")]
-    public async Task<IActionResult> GetPaged(int accountId, [FromBody] QueryParameters queryParams)
+    public async Task<IActionResult> GetPaged([FromBody] TransactionSearchDto dto)
     {
-        var result = await _transactionService.GetTransactionsAsync(UserId, accountId, queryParams);
+        var result = await _transactionService.GetTransactionsAsync(UserId, dto.AccountId, dto.QueryParameters);
         return HandleResult(result);
     }
 
     [HttpPost("upsert")]
-    public async Task<IActionResult> Upsert(int accountId, [FromBody] UpsertTransactionDto dto)
+    public async Task<IActionResult> Upsert([FromBody] UpsertTransactionPayloadDto dto)
     {
-        var result = await _transactionService.UpsertTransactionAsync(UserId, accountId, dto);
+        var result = await _transactionService.UpsertTransactionAsync(UserId, dto.AccountId, dto.Transaction);
         return HandleResult(result);
     }
 
-    [HttpDelete("{transactionId}")]
-    public async Task<IActionResult> Delete(int accountId, int transactionId)
+    [HttpPost("delete")]
+    public async Task<IActionResult> Delete([FromBody] DeleteTransactionDto dto)
     {
-        var result = await _transactionService.DeleteTransactionAsync(UserId, accountId, transactionId);
+        var result = await _transactionService.DeleteTransactionAsync(UserId, dto.AccountId, dto.TransactionId);
         return HandleResult(result);
     }
+
     [HttpPost("transfer")]
-    public async Task<IActionResult> CreateTransfer(int accountId, [FromBody] CreateTransferDto dto)
+    public async Task<IActionResult> CreateTransfer([FromBody] CreateTransferPayloadDto dto)
     {
-        var result = await _transactionService.CreateTransferAsync(UserId, accountId, dto);
+        var result = await _transactionService.CreateTransferAsync(UserId, dto.AccountId, dto.Transfer);
         return HandleResult(result);
     }
 
-    [HttpPost("{transactionId}/switch-account")]
-    public async Task<IActionResult> SwitchAccount(int accountId, int transactionId, [FromBody] SwitchTransactionAccountDto dto)
+    [HttpPost("switch-account")]
+    public async Task<IActionResult> SwitchAccount([FromBody] SwitchTransactionAccountPayloadDto dto)
     {
-        // We can ignore the 'accountId' from the URL as the transactionId is the true source of truth
-        var result = await _transactionService.SwitchAccountAsync(UserId, transactionId, dto.DestinationAccountId);
+        var result = await _transactionService.SwitchAccountAsync(UserId, dto.TransactionId, dto.DestinationAccountId);
         return HandleResult(result);
     }
 }

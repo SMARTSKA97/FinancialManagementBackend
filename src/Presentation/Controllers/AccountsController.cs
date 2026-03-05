@@ -1,11 +1,14 @@
 ﻿using Application;
 using Application.Contracts;
+using Application.DTOs;
 using Application.DTOs.Accounts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 [Route("api/[controller]")]
+[Authorize]
 public class AccountsController : BaseController
 {
     private readonly IAccountService _accountService;
@@ -29,10 +32,10 @@ public class AccountsController : BaseController
         return HandleResult(result);
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    [HttpPost("delete")]
+    public async Task<IActionResult> Delete([FromBody] DeleteDto dto)
     {
-        var result = await _accountService.DeleteAccountAsync(UserId, id);
+        var result = await _accountService.DeleteAccountAsync(UserId, dto.Id);
         return HandleResult(result);
     }
 }

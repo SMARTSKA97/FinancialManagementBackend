@@ -20,6 +20,39 @@ public class TransactionCategoryService : ICategoryService<TransactionCategoryDt
         _mapper = mapper;
     }
 
+    public async Task<Result<PaginatedResult<TransactionCategoryDto>>> GetPagedAsync(string userId, QueryParameters queryParams)
+    {
+        var query = _context.TransactionCategories
+            .Where(c => c.UserId == userId)
+            .AsQueryable();
+
+        // Apply global search
+        if (!string.IsNullOrWhiteSpace(queryParams.GlobalSearch))
+        {
+            query = query.Where(c => c.Name.ToLower().Contains(queryParams.GlobalSearch.ToLower()));
+        }
+
+        // Get total count before pagination
+        var totalRecords = await query.CountAsync();
+
+        // Apply sorting
+        query = queryParams.SortBy?.ToLower() switch
+        {
+            "name" => queryParams.SortOrder == "desc" ? query.OrderByDescending(c => c.Name) : query.OrderBy(c => c.Name),
+            _ => query.OrderBy(c => c.Name)
+        };
+
+        // Apply pagination
+        var items = await query
+            .Skip((queryParams.PageNumber - 1) * queryParams.PageSize)
+            .Take(queryParams.PageSize)
+            .ToListAsync();
+
+        var mapped = _mapper.Map<List<TransactionCategoryDto>>(items);
+        var result = new PaginatedResult<TransactionCategoryDto>(mapped, totalRecords, queryParams.PageNumber, queryParams.PageSize);
+        return Result.Success(result);
+    }
+
     public async Task<Result<IReadOnlyList<TransactionCategoryDto>>> GetAllAsync(string userId)
     {
         var allCategories = await _context.TransactionCategories

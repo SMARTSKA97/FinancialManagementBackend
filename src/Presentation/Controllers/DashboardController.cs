@@ -17,6 +17,14 @@ public class DashboardController : BaseController
         _dashboardService = dashboardService;
     }
 
+    [HttpGet("public-stats")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetPublicStats()
+    {
+        var result = await _dashboardService.GetPublicStatsAsync();
+        return HandleResult(result);
+    }
+
     [HttpGet("summary")]
     public async Task<IActionResult> GetSummary()
     {
@@ -31,10 +39,10 @@ public class DashboardController : BaseController
         return HandleResult(result);
     }
 
-    [HttpGet("account-summary/{accountId}")]
-    public async Task<IActionResult> GetAccountSummary(int accountId)
+    [HttpPost("account-summary")]
+    public async Task<IActionResult> GetAccountSummary([FromBody] AccountSummaryRequestDto dto)
     {
-        var result = await _dashboardService.GetAccountSummaryAsync(UserId, accountId);
+        var result = await _dashboardService.GetAccountSummaryAsync(UserId, dto.AccountId);
         return HandleResult(result);
     }
 }

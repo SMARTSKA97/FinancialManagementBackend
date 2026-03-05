@@ -18,7 +18,6 @@ public class AuthController : BaseController
 
     private string GetIpAddress()
     {
-        // Check for X-Forwarded-For header if behind a proxy (like Render)
         if (Request.Headers.ContainsKey("X-Forwarded-For"))
             return Request.Headers["X-Forwarded-For"].ToString();
 
@@ -26,16 +25,25 @@ public class AuthController : BaseController
     }
 
     [HttpPost("register")]
-    [AllowAnonymous] // Explicitly mark this endpoint as public
+    [AllowAnonymous]
     [EnableRateLimiting("login")]
     public async Task<IActionResult> Register([FromBody] RegisterUserDto dto)
     {
-        var result = await _authService.RegisterAsync(dto);
+        var result = await _authService.InitiateRegistrationAsync(dto);
+        return HandleResult(result);
+    }
+
+    [HttpPost("verify-registration")]
+    [AllowAnonymous]
+    [EnableRateLimiting("login")]
+    public async Task<IActionResult> VerifyRegistration([FromBody] VerifyRegistrationDto dto)
+    {
+        var result = await _authService.CompleteRegistrationAsync(dto);
         return HandleResult(result);
     }
 
     [HttpPost("login")]
-    [AllowAnonymous] // Explicitly mark this endpoint as public
+    [AllowAnonymous]
     [EnableRateLimiting("login")]
     public async Task<IActionResult> Login([FromBody] LoginUserDto dto)
     {
@@ -45,7 +53,7 @@ public class AuthController : BaseController
     }
 
     [HttpPost("refresh")]
-    [AllowAnonymous] // This must be public because the access token might be expired
+    [AllowAnonymous]
     [EnableRateLimiting("login")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenDto dto)
     {
@@ -54,11 +62,56 @@ public class AuthController : BaseController
     }
 
     [HttpPost("logout")]
-    [AllowAnonymous] // Allow logout even if token is expired
+    [AllowAnonymous]
     [EnableRateLimiting("login")]
     public async Task<IActionResult> Logout([FromBody] RefreshTokenDto dto)
     {
         var result = await _authService.LogoutAsync(dto.RefreshToken, GetIpAddress());
+        return HandleResult(result);
+    }
+
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    [EnableRateLimiting("login")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+    {
+        var result = await _authService.ForgotPasswordAsync(dto.Email);
+        return HandleResult(result);
+    }
+
+    [HttpPost("verify-otp")]
+    [AllowAnonymous]
+    [EnableRateLimiting("login")]
+    public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpDto dto)
+    {
+        var result = await _authService.VerifyOtpAsync(dto);
+        return HandleResult(result);
+    }
+
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    [EnableRateLimiting("login")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+    {
+        var result = await _authService.ResetPasswordAsync(dto);
+        return HandleResult(result);
+    }
+
+    [HttpPost("check-email")]
+    [AllowAnonymous]
+    public async Task<IActionResult> CheckEmail([FromBody] CheckEmailDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Email)) return BadRequest("Email is required.");
+        var result = await _authService.CheckEmailAsync(dto.Email);
+        return HandleResult(result);
+    }
+
+    [HttpPost("check-username")]
+    [AllowAnonymous]
+    public async Task<IActionResult> CheckUserName([FromBody] CheckUsernameDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Username)) return BadRequest("Username is required.");
+        var result = await _authService.CheckUserNameAsync(dto.Username);
         return HandleResult(result);
     }
 }

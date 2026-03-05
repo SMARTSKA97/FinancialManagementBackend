@@ -2,6 +2,8 @@ using Application.Common.Models;
 using Application.Contracts;
 using Application.DTOs.Dashboard;
 using Domain.Enums;
+using Microsoft.AspNetCore.Identity;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
@@ -9,10 +11,26 @@ namespace Application.Services;
 public class DashboardService : IDashboardService
 {
     private readonly IApplicationDbContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public DashboardService(IApplicationDbContext context)
+    public DashboardService(IApplicationDbContext context, UserManager<ApplicationUser> userManager)
     {
         _context = context;
+        _userManager = userManager;
+    }
+
+    public async Task<Result<PublicStatsDto>> GetPublicStatsAsync()
+    {
+        var totalUsers = await _userManager.Users.CountAsync();
+        var totalAccounts = await _context.Accounts.CountAsync();
+        var totalTransactions = await _context.Transactions.CountAsync();
+
+        return Result.Success(new PublicStatsDto
+        {
+            TotalUsers = totalUsers,
+            TotalAccounts = totalAccounts,
+            TotalTransactions = totalTransactions
+        });
     }
 
     public async Task<Result<DashboardSummaryDto>> GetSummaryAsync(string userId)

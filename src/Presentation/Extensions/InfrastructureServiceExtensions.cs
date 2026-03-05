@@ -10,6 +10,11 @@ using System.Text;
 
 namespace API.Extensions;
 
+using Application.Contracts;
+using Infrastructure.Services;
+using Infrastructure.BackgroundJobs;
+using StackExchange.Redis;
+
 public static class InfrastructureServiceExtensions
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
@@ -21,6 +26,14 @@ public static class InfrastructureServiceExtensions
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
             o => o.MigrationsHistoryTable("__EFMigrationsHistory", "identity")));
+
+        // 2.1 Register Redis
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
+            ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis") ?? "localhost"));
+
+        // 2.2 Register Email Service & Worker
+        services.AddScoped<IEmailService, RedisEmailService>();
+        services.AddHostedService<EmailQueueWorker>();
 
         // 3. Register Identity with STRONG password requirements (dev AND production)
         services.AddIdentityCore<ApplicationUser>(options =>

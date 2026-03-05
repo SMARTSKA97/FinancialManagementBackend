@@ -103,10 +103,6 @@ app.Use(async (context, next) =>
     context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
     context.Response.Headers.Append("X-Frame-Options", "DENY");
     context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
-    // Tightened CSP: Removed 'unsafe-inline' from script-src (if possible, otherwise keep minimal), added object-src 'none', base-uri 'self'
-    // Note: If Angular requires inline styles/scripts, we might need 'unsafe-inline' or hashes.
-    // For now, we will try to be strict but keep 'unsafe-inline' for styles as Angular often needs it for component styles.
-    // We removed 'unsafe-inline' from script-src to prevent XSS.
     context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; object-src 'none'; base-uri 'self';");
     await next();
 });

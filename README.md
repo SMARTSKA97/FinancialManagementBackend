@@ -1,12 +1,12 @@
 # 🖥️ Financial Planner — Backend
 
-> ASP.NET Core (.NET 8) REST API for Financial Planner — built with Clean Architecture, Entity Framework Core, Redis, and ASP.NET Core Identity.
+> ASP.NET Core (.NET 10) REST API for Financial Planner — built with Clean Architecture, Entity Framework Core, Redis, and ASP.NET Core Identity.
 
 ## Tech Stack
 
 | Technology | Purpose |
 |------------|---------|
-| **.NET 8 / ASP.NET Core** | Web API framework |
+| **.NET 10 / ASP.NET Core** | Web API framework |
 | **Entity Framework Core** | ORM — PostgreSQL migrations, LINQ queries |
 | **ASP.NET Core Identity** | User management, password hashing (BCrypt), roles |
 | **Redis (StackExchange.Redis)** | OTP store, pending registration cache (with TTL) |

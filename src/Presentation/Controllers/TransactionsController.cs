@@ -50,4 +50,11 @@ public class TransactionsController : BaseController
         var result = await _transactionService.SwitchAccountAsync(UserId, dto.TransactionId, dto.DestinationAccountId);
         return HandleResult(result);
     }
+
+    [HttpPost("bulk-upsert")]
+    public async Task<IActionResult> BulkUpsert([FromBody] BulkTransactionPayloadDto dto)
+    {
+        var result = await _transactionService.BulkUpsertTransactionsAsync(UserId, dto);
+        return HandleResult(result);
+    }
 }

@@ -4,7 +4,7 @@ namespace Application;
 
 public class QueryParameters
 {
-    private const int MaxPageSize = 50;
+    private const int MaxPageSize = 1000;
     private int _pageSize = 10;
 
     [FromQuery(Name = "pageNumber")]

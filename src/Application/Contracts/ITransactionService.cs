@@ -10,4 +10,5 @@ public interface ITransactionService
     Task<Result<bool>> DeleteTransactionAsync(string userId, int accountId, int transactionId);
     Task<Result<bool>> CreateTransferAsync(string userId, int sourceAccountId, CreateTransferDto dto);
     Task<Result<bool>> SwitchAccountAsync(string userId, int transactionId, int destinationAccountId);
+    Task<Result<BulkInsertResponseDto>> BulkUpsertTransactionsAsync(string userId, BulkTransactionPayloadDto payload);
 }

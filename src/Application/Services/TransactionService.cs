@@ -198,4 +198,73 @@ public class TransactionService : ITransactionService
 
         return Result.Success(true);
     }
+
+    public async Task<Result<BulkInsertResponseDto>> BulkUpsertTransactionsAsync(string userId, BulkTransactionPayloadDto payload)
+    {
+        var response = new BulkInsertResponseDto();
+        
+        // Use casting to access Database since IApplicationDbContext might not expose it, 
+        // to avoid touching Infrastructure layer if it explicitly implements interface.
+        using var transaction = await ((DbContext)_context).Database.BeginTransactionAsync();
+
+        try
+        {
+            for (int i = 0; i < payload.Transactions.Count; i++)
+            {
+                var entry = payload.Transactions[i];
+                bool isRowSuccess = false;
+                string rowError = string.Empty;
+
+                if (entry.DestinationAccountId.HasValue)
+                {
+                    var transferDto = new CreateTransferDto
+                    {
+                        Amount = entry.Transaction.Amount,
+                        Date = entry.Transaction.Date,
+                        DestinationAccountId = entry.DestinationAccountId.Value,
+                        Description = entry.Transaction.Description ?? "Transfer"
+                    };
+                    var result = await CreateTransferAsync(userId, entry.AccountId, transferDto);
+                    isRowSuccess = result.IsSuccess;
+                    if (!isRowSuccess) rowError = result.Error.Description;
+                }
+                else
+                {
+                    var result = await UpsertTransactionAsync(userId, entry.AccountId, entry.Transaction);
+                    isRowSuccess = result.IsSuccess;
+                    if (!isRowSuccess) rowError = result.Error.Description;
+                }
+                
+                if (isRowSuccess)
+                {
+                    response.SuccessfulCount++;
+                }
+                else
+                {
+                    response.FailedCount++;
+                    response.FailedTransactions.Add(new BulkInsertFailureDto
+                    {
+                        Index = i,
+                        Errors = new List<string> { rowError }
+                    });
+                }
+            }
+
+            if (response.FailedCount == 0 || response.SuccessfulCount > 0)
+            {
+               await transaction.CommitAsync();
+            }
+            else
+            {
+               await transaction.RollbackAsync();
+            }
+
+            return Result.Success(response);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync();
+            return Result.Failure<BulkInsertResponseDto>(new Error("BulkInsert.Error", "An unexpected error occurred during bulk insert."));
+        }
+    }
 }

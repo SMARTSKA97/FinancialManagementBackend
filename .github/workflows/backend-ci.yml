@@ -12,35 +12,7 @@ on:
       - "src/**"
 
 jobs:
-  build_and_test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup .NET 10
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "10.0.x"
-
-      - name: Restore dependencies
-        run: dotnet restore src/Presentation/API.csproj
-
-      - name: Build
-        run: |
-          # Change directory specifically for the build process to avoid path resolution issues
-          cd src/Presentation
-          dotnet build API.csproj --no-restore -c Release
-
-      - name: Run Tests
-        run: echo "No test project currently exists. Skipping."
-        # Replace the echo above with this when a test project is created:
-        # run: dotnet test tests/Application.UnitTests/Application.UnitTests.csproj --no-build --verbosity normal
-
-  deploy:
-    needs: build_and_test
-    # Only deploy on pushes to main, not on PRs
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -56,20 +28,16 @@ jobs:
 
       - name: Install EF Core CLI Tool
         run: dotnet tool install --global dotnet-ef
-        # We install EF Core 9 tools since the project uses EF Core 9
+
+      - name: Build
+        run: |
+          cd src/Presentation
+          dotnet build API.csproj --no-restore -c Release
 
       - name: Apply Database Migrations
-        # We use a powerful 'ADMIN_DB_CONNECTION' secret that has DDL privileges
-        # Note: We must first add the path to global tools to the system path
         run: |
           export PATH="$PATH:$HOME/.dotnet/tools"
           dotnet ef database update \
             --project src/Infrastructure/Infrastructure.csproj \
             --startup-project src/Presentation/API.csproj \
             --connection "${{ secrets.DB_ADMIN_CONNECTION_STRING }}"
-
-      - name: Trigger Render Deployment
-        uses: fjogeleit/http-request-action@v1.15.0
-        with:
-          url: "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
-          method: "POST"

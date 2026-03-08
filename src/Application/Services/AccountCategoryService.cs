@@ -13,17 +13,22 @@ public class AccountCategoryService : ICategoryService<AccountCategoryDto, Upser
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ICacheService _cache;
 
-    public AccountCategoryService(IApplicationDbContext context, IMapper mapper)
+    // Cache key helpers — short prefixes save Upstash storage bytes
+    private static string AllKey(string userId) => $"ac:all:{userId}";
+
+    public AccountCategoryService(IApplicationDbContext context, IMapper mapper, ICacheService cache)
     {
         _context = context;
         _mapper = mapper;
+        _cache = cache;
     }
 
     public async Task<Result<PaginatedResult<AccountCategoryDto>>> GetPagedAsync(string userId, QueryParameters queryParams)
     {
         var query = _context.AccountCategories
-            .Where(c => c.UserId == userId)
+            .Where(c => c.UserId == userId && !c.IsDeleted)
             .AsQueryable();
 
         // Apply global search
@@ -55,11 +60,17 @@ public class AccountCategoryService : ICategoryService<AccountCategoryDto, Upser
 
     public async Task<Result<IReadOnlyList<AccountCategoryDto>>> GetAllAsync(string userId)
     {
+        var cacheKey = AllKey(userId);
+        var cached = await _cache.GetAsync<IReadOnlyList<AccountCategoryDto>>(cacheKey);
+        if (cached is not null)
+            return Result.Success(cached);
+
         var allCategories = await _context.AccountCategories
-            .Where(c => c.UserId == userId)
+            .Where(c => c.UserId == userId && !c.IsDeleted)
             .ToListAsync();
-        
+
         var mapped = _mapper.Map<IReadOnlyList<AccountCategoryDto>>(allCategories);
+        await _cache.SetAsync(cacheKey, mapped, TimeSpan.FromHours(1));
         return Result.Success(mapped);
     }
 
@@ -87,6 +98,7 @@ public class AccountCategoryService : ICategoryService<AccountCategoryDto, Upser
         try
         {
             await _context.SaveChangesAsync();
+            await _cache.RemoveAsync(AllKey(userId)); // invalidate stale list
             var resultDto = _mapper.Map<AccountCategoryDto>(category);
             return Result.Success(resultDto);
         }
@@ -102,8 +114,11 @@ public class AccountCategoryService : ICategoryService<AccountCategoryDto, Upser
         if (category == null || category.UserId != userId)
             return Result.Failure<bool>(new Error("Category.NotFound", "Category not found."));
 
-        _context.AccountCategories.Remove(category);
+        category.IsDeleted = true;
+        category.DeletedAt = DateTime.UtcNow;
+        _context.AccountCategories.Update(category);
         await _context.SaveChangesAsync();
+        await _cache.RemoveAsync(AllKey(userId));
         return Result.Success(true);
     }
 }

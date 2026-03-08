@@ -1,5 +1,7 @@
 ﻿using Application.Contracts;
 using Application.DTOs.Dashboard;
+using Application.Features.Dashboard.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +13,12 @@ namespace API.Controllers;
 public class DashboardController : BaseController
 {
     private readonly IDashboardService _dashboardService;
+    private readonly IMediator _mediator;
 
-    public DashboardController(IDashboardService dashboardService)
+    public DashboardController(IDashboardService dashboardService, IMediator mediator)
     {
         _dashboardService = dashboardService;
+        _mediator = mediator;
     }
 
     [HttpGet("public-stats")]
@@ -50,6 +54,13 @@ public class DashboardController : BaseController
     public async Task<IActionResult> GetInsights([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
     {
         var result = await _dashboardService.GetDeepInsightsAsync(UserId, startDate, endDate);
+        return HandleResult(result);
+    }
+
+    [HttpGet("financial-health")]
+    public async Task<IActionResult> GetFinancialHealth()
+    {
+        var result = await _mediator.Send(new GetFinancialHealthQuery(UserId));
         return HandleResult(result);
     }
 }

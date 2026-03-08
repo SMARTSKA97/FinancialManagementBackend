@@ -18,6 +18,13 @@ public class AccountsController : BaseController
         _accountService = accountService;
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var result = await _accountService.GetAllAccountsAsync(UserId);
+        return HandleResult(result);
+    }
+
     [HttpPost("search")] // Paginated view
     public async Task<IActionResult> GetPaged([FromBody] QueryParameters queryParams)
     {

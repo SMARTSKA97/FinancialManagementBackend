@@ -12,11 +12,13 @@ public class TransactionService : ITransactionService
 {
     private readonly IMapper _mapper;
     private readonly IApplicationDbContext _context;
+    private readonly ICacheService _cache;
 
-    public TransactionService(IApplicationDbContext context, IMapper mapper)
+    public TransactionService(IApplicationDbContext context, IMapper mapper, ICacheService cache)
     {
         _context = context;
         _mapper = mapper;
+        _cache = cache;
     }
 
     public async Task<Result<PaginatedResult<TransactionDto>>> GetTransactionsAsync(string userId, int accountId, QueryParameters queryParams)
@@ -39,8 +41,17 @@ public class TransactionService : ITransactionService
 
         var totalRecords = await queryable.CountAsync();
 
+        // Apply dynamic sorting
+        queryable = queryParams.SortBy?.ToLower() switch
+        {
+            "date" => queryParams.SortOrder == "asc" ? queryable.OrderBy(t => t.Date) : queryable.OrderByDescending(t => t.Date),
+            "amount" => queryParams.SortOrder == "desc" ? queryable.OrderByDescending(t => t.Amount) : queryable.OrderBy(t => t.Amount),
+            "category" or "categoryname" => queryParams.SortOrder == "desc" ? queryable.OrderByDescending(t => t.TransactionCategory.Name) : queryable.OrderBy(t => t.TransactionCategory.Name),
+            "description" => queryParams.SortOrder == "desc" ? queryable.OrderByDescending(t => t.Description) : queryable.OrderBy(t => t.Description),
+            _ => queryable.OrderByDescending(t => t.Date) // Default
+        };
+
         var items = await queryable
-            .OrderByDescending(t => t.Date)
             .Skip((queryParams.PageNumber - 1) * queryParams.PageSize)
             .Take(queryParams.PageSize)
             .ToListAsync();
@@ -96,6 +107,7 @@ public class TransactionService : ITransactionService
             .FirstAsync(t => t.Id == transaction.Id);
 
         var resultDto = _mapper.Map<TransactionDto>(resultTransactionWithCategory);
+        await _cache.RemoveByPrefixAsync($"dash::{userId}:"); // invalidates summary, category, insights
 
         return Result.Success(resultDto);
     }
@@ -114,9 +126,13 @@ public class TransactionService : ITransactionService
         account.Balance += (transaction.Type == TransactionType.Income ? -transaction.Amount : transaction.Amount);
 
         _context.Accounts.Update(account);
-        _context.Transactions.Remove(transaction);
+        
+        transaction.IsDeleted = true;
+        transaction.DeletedAt = DateTime.UtcNow;
+        _context.Transactions.Update(transaction);
 
         await _context.SaveChangesAsync();
+        await _cache.RemoveByPrefixAsync($"dash::{userId}:");
 
         return Result.Success(true);
     }
@@ -162,6 +178,7 @@ public class TransactionService : ITransactionService
         _context.Accounts.Update(destinationAccount);
 
         await _context.SaveChangesAsync(); // Transactional by default
+        await _cache.RemoveByPrefixAsync($"dash::{userId}:");
 
         return Result.Success(true);
     }
@@ -195,6 +212,7 @@ public class TransactionService : ITransactionService
         _context.Transactions.Update(transaction);
 
         await _context.SaveChangesAsync();
+        await _cache.RemoveByPrefixAsync($"dash::{userId}:"); // In case we track transfers on dashboard later
 
         return Result.Success(true);
     }
@@ -222,7 +240,8 @@ public class TransactionService : ITransactionService
                         Amount = entry.Transaction.Amount,
                         Date = entry.Transaction.Date,
                         DestinationAccountId = entry.DestinationAccountId.Value,
-                        Description = entry.Transaction.Description ?? "Transfer"
+                        Description = entry.Transaction.Description ?? "Transfer",
+                        TransactionCategoryId = entry.Transaction.TransactionCategoryId
                     };
                     var result = await CreateTransferAsync(userId, entry.AccountId, transferDto);
                     isRowSuccess = result.IsSuccess;
@@ -253,6 +272,7 @@ public class TransactionService : ITransactionService
             if (response.FailedCount == 0 || response.SuccessfulCount > 0)
             {
                await transaction.CommitAsync();
+               await _cache.RemoveByPrefixAsync($"dash::{userId}:");
             }
             else
             {

@@ -6,8 +6,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.CookiePolicy;
+using Serilog;
+using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((ctx, lc) => lc
+    .ReadFrom.Configuration(ctx.Configuration)
+    .Enrich.FromLogContext()
+    .WriteTo.Console(new CompactJsonFormatter())
+    .WriteTo.File("logs/app-.txt",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 30));
 
 // --- Dependency Injection Setup ---
 // This handles all service registrations (Application, Infrastructure, API)
@@ -28,12 +38,17 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 var app = builder.Build();
 
+app.UseSerilogRequestLogging();
+
 // --- Middleware Pipeline ---
 // 1. Forwarded Headers (Must be first to identify client IP)
 app.UseForwardedHeaders();
 
 // 2. Global Exception Handler
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+// 2.5 Response Compression
+app.UseResponseCompression();
 
 // 3. Health Checks (Liveness/Readiness)
 app.MapGet("/healthz", () => Results.Ok("ok"));

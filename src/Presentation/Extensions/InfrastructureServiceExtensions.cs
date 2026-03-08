@@ -2,17 +2,18 @@
 using Application.Contracts;
 using Domain.Entities;
 using Infrastructure.Persistence;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 namespace API.Extensions;
 
-using Application.Contracts;
-using Infrastructure.Services;
 using Infrastructure.BackgroundJobs;
+using Infrastructure.BackgroundWorkers;
 using StackExchange.Redis;
 
 public static class InfrastructureServiceExtensions
@@ -27,13 +28,21 @@ public static class InfrastructureServiceExtensions
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
             o => o.MigrationsHistoryTable("__EFMigrationsHistory", "identity")));
 
-        // 2.1 Register Redis
+        // 2.1 Register Redis connection
         services.AddSingleton<IConnectionMultiplexer>(sp =>
             ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis") ?? "localhost"));
 
-        // 2.2 Register Email Service & Worker
+        // 2.2 Register two-tier cache service (IMemoryCache L1 + Redis L2)
+        // L1 serves most reads with zero Upstash commands; Redis only hit on L1 miss.
+        services.AddMemoryCache();
+        services.AddSingleton<ICacheService, RedisCacheService>();
+
+        // 2.3 Register Email Service & Worker
         services.AddScoped<IEmailService, RedisEmailService>();
         services.AddHostedService<EmailQueueWorker>();
+
+        // 2.4 Register Recurring Transaction Worker
+        services.AddHostedService<RecurringTransactionWorker>();
 
         // 3. Register Identity with STRONG password requirements (dev AND production)
         services.AddIdentityCore<ApplicationUser>(options =>

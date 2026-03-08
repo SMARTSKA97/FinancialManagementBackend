@@ -13,17 +13,21 @@ public class TransactionCategoryService : ICategoryService<TransactionCategoryDt
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ICacheService _cache;
 
-    public TransactionCategoryService(IApplicationDbContext context, IMapper mapper)
+    private static string AllKey(string userId) => $"tc:all:{userId}";
+
+    public TransactionCategoryService(IApplicationDbContext context, IMapper mapper, ICacheService cache)
     {
         _context = context;
         _mapper = mapper;
+        _cache = cache;
     }
 
     public async Task<Result<PaginatedResult<TransactionCategoryDto>>> GetPagedAsync(string userId, QueryParameters queryParams)
     {
         var query = _context.TransactionCategories
-            .Where(c => c.UserId == userId)
+            .Where(c => c.UserId == userId && !c.IsDeleted)
             .AsQueryable();
 
         // Apply global search
@@ -55,11 +59,17 @@ public class TransactionCategoryService : ICategoryService<TransactionCategoryDt
 
     public async Task<Result<IReadOnlyList<TransactionCategoryDto>>> GetAllAsync(string userId)
     {
+        var cacheKey = AllKey(userId);
+        var cached = await _cache.GetAsync<IReadOnlyList<TransactionCategoryDto>>(cacheKey);
+        if (cached is not null)
+            return Result.Success(cached);
+
         var allCategories = await _context.TransactionCategories
-            .Where(c => c.UserId == userId)
+            .Where(c => c.UserId == userId && !c.IsDeleted)
             .ToListAsync();
-        
+
         var mapped = _mapper.Map<IReadOnlyList<TransactionCategoryDto>>(allCategories);
+        await _cache.SetAsync(cacheKey, mapped, TimeSpan.FromHours(1));
         return Result.Success(mapped);
     }
 
@@ -87,6 +97,7 @@ public class TransactionCategoryService : ICategoryService<TransactionCategoryDt
         try
         {
             await _context.SaveChangesAsync();
+            await _cache.RemoveAsync(AllKey(userId)); // invalidate stale list
             var resultDto = _mapper.Map<TransactionCategoryDto>(category);
             return Result.Success(resultDto);
         }
@@ -102,8 +113,11 @@ public class TransactionCategoryService : ICategoryService<TransactionCategoryDt
         if (category == null || category.UserId != userId)
             return Result.Failure<bool>(new Error("Category.NotFound", "Category not found."));
 
-        _context.TransactionCategories.Remove(category);
+        category.IsDeleted = true;
+        category.DeletedAt = DateTime.UtcNow;
+        _context.TransactionCategories.Update(category);
         await _context.SaveChangesAsync();
+        await _cache.RemoveAsync(AllKey(userId));
         return Result.Success(true);
     }
 }

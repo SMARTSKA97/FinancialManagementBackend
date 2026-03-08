@@ -2,12 +2,14 @@
 using Application.Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 
 namespace API.Controllers;
 
 [ApiController]
 [Authorize]
+[EnableRateLimiting("api")]
 public abstract class BaseController : ControllerBase
 {
     protected string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;

@@ -12,11 +12,21 @@ public class DashboardService : IDashboardService
 {
     private readonly IApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ICacheService _cache;
 
-    public DashboardService(IApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    private static string SummaryKey(string userId, DateTime start, DateTime end)
+        => $"dash:sum:{userId}:{start:yyyyMMdd}:{end:yyyyMMdd}";
+    private static string CategoryKey(string userId, DateTime start, DateTime end)
+        => $"dash:cat:{userId}:{start:yyyyMMdd}:{end:yyyyMMdd}";
+    private static string InsightsKey(string userId, DateTime start, DateTime end)
+        => $"dash:ins:{userId}:{start:yyyyMMdd}:{end:yyyyMMdd}";
+    private static string UserPrefix(string userId) => $"dash::{userId}:";
+
+    public DashboardService(IApplicationDbContext context, UserManager<ApplicationUser> userManager, ICacheService cache)
     {
         _context = context;
         _userManager = userManager;
+        _cache = cache;
     }
 
     public async Task<Result<PublicStatsDto>> GetPublicStatsAsync()
@@ -38,6 +48,11 @@ public class DashboardService : IDashboardService
         var now = DateTime.UtcNow;
         var startFilter = startDate ?? new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var endFilter = endDate ?? startFilter.AddMonths(1).AddDays(-1);
+
+        var cacheKey = SummaryKey(userId, startFilter, endFilter);
+        var cached = await _cache.GetAsync<DashboardSummaryDto>(cacheKey);
+        if (cached is not null)
+            return Result.Success(cached);
 
         var netWorth = await _context.Accounts
             .Where(a => a.UserId == userId)
@@ -61,6 +76,7 @@ public class DashboardService : IDashboardService
             MonthlyExpenses = monthlyExpenses
         };
 
+        await _cache.SetAsync(cacheKey, summary, TimeSpan.FromMinutes(5));
         return Result.Success(summary);
     }
 
@@ -69,6 +85,11 @@ public class DashboardService : IDashboardService
         var now = DateTime.UtcNow;
         var startFilter = startDate ?? new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var endFilter = endDate ?? startFilter.AddMonths(1).AddDays(-1);
+
+        var cacheKey = CategoryKey(userId, startFilter, endFilter);
+        var cached = await _cache.GetAsync<List<SpendingByCategoryDto>>(cacheKey);
+        if (cached is not null)
+            return Result.Success(cached);
 
         var spendingData = await _context.Transactions
             .Where(t =>
@@ -84,6 +105,7 @@ public class DashboardService : IDashboardService
             .OrderByDescending(d => d.TotalAmount)
             .ToListAsync();
 
+        await _cache.SetAsync(cacheKey, spendingData, TimeSpan.FromMinutes(5));
         return Result.Success(spendingData);
     }
 
@@ -124,6 +146,11 @@ public class DashboardService : IDashboardService
         var now = DateTime.UtcNow;
         var startFilter = startDate ?? new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var endFilter = endDate ?? startFilter.AddMonths(1).AddDays(-1);
+
+        var cacheKey = InsightsKey(userId, startFilter, endFilter);
+        var cached = await _cache.GetAsync<DashboardInsightsDto>(cacheKey);
+        if (cached is not null)
+            return Result.Success(cached);
 
         var query = _context.Transactions
             .Include(t => t.TransactionCategory)

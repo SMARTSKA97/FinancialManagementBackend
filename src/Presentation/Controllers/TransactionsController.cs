@@ -1,60 +1,64 @@
 ﻿using Application;
-using Application.Contracts;
 using Application.DTOs.Transactions;
+using Application.Features.Transactions.Commands;
+using Application.Features.Transactions.Queries;
 using Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace API.Controllers;
 
 [Route("api/[controller]")]
 public class TransactionsController : BaseController
 {
-    private readonly ITransactionService _transactionService;
+    private readonly ISender _sender;
 
-    public TransactionsController(ITransactionService transactionService)
+    public TransactionsController(ISender sender)
     {
-        _transactionService = transactionService;
+        _sender = sender;
     }
 
     [HttpPost("search")]
     public async Task<IActionResult> GetPaged([FromBody] TransactionSearchDto dto)
     {
-        var result = await _transactionService.GetTransactionsAsync(UserId, dto.AccountId, dto.QueryParameters);
+        var result = await _sender.Send(new GetTransactionsQuery(UserId, dto.AccountId, dto.QueryParameters));
         return HandleResult(result);
     }
 
     [HttpPost("upsert")]
     public async Task<IActionResult> Upsert([FromBody] UpsertTransactionPayloadDto dto)
     {
-        var result = await _transactionService.UpsertTransactionAsync(UserId, dto.AccountId, dto.Transaction);
+        var result = await _sender.Send(new UpsertTransactionCommand(UserId, dto.AccountId, dto.Transaction));
         return HandleResult(result);
     }
 
     [HttpPost("delete")]
     public async Task<IActionResult> Delete([FromBody] DeleteTransactionDto dto)
     {
-        var result = await _transactionService.DeleteTransactionAsync(UserId, dto.AccountId, dto.TransactionId);
+        var result = await _sender.Send(new DeleteTransactionCommand(UserId, dto.AccountId, dto.TransactionId));
         return HandleResult(result);
     }
 
     [HttpPost("transfer")]
     public async Task<IActionResult> CreateTransfer([FromBody] CreateTransferPayloadDto dto)
     {
-        var result = await _transactionService.CreateTransferAsync(UserId, dto.AccountId, dto.Transfer);
+        var result = await _sender.Send(new CreateTransferCommand(UserId, dto.AccountId, dto.Transfer));
         return HandleResult(result);
     }
 
     [HttpPost("switch-account")]
     public async Task<IActionResult> SwitchAccount([FromBody] SwitchTransactionAccountPayloadDto dto)
     {
-        var result = await _transactionService.SwitchAccountAsync(UserId, dto.TransactionId, dto.DestinationAccountId);
+        var result = await _sender.Send(new SwitchAccountCommand(UserId, dto.TransactionId, dto.DestinationAccountId));
         return HandleResult(result);
     }
 
     [HttpPost("bulk-upsert")]
+    [EnableRateLimiting("bulk")]
     public async Task<IActionResult> BulkUpsert([FromBody] BulkTransactionPayloadDto dto)
     {
-        var result = await _transactionService.BulkUpsertTransactionsAsync(UserId, dto);
+        var result = await _sender.Send(new BulkUpsertTransactionsCommand(UserId, dto));
         return HandleResult(result);
     }
 }

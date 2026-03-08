@@ -20,6 +20,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<TransactionCategory> TransactionCategories { get; set; }
     public DbSet<Feedback> Feedbacks { get; set; }
+    public DbSet<Budget> Budgets { get; set; }
+    public DbSet<RecurringTransaction> RecurringTransactions { get; set; }
 
     // --- DbSets for Log Entities ---
     public DbSet<AccountLog> AccountLogs { get; set; }
@@ -170,21 +172,37 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<IdentityUserToken<string>>(e => e.ToTable("UserTokens", "identity"));
 
         // --- ACCOUNTS SCHEMA ---
-        builder.Entity<Account>(e => e.ToTable("Accounts", "accounts"));
+        builder.Entity<Account>(e =>
+        {
+            e.ToTable("Accounts", "accounts");
+            // e.HasQueryFilter(a => !a.IsDeleted); // Moved to global filters
+        });
         builder.Entity<AccountCategory>(e =>
         {
             e.ToTable("AccountCategories", "accounts");
             e.HasIndex(ac => new { ac.UserId, ac.Name }).IsUnique();
+            // e.HasQueryFilter(ac => !ac.IsDeleted); // Moved to global filters
         });
         builder.Entity<AccountLog>(e => e.ToTable("AccountLogs", "accounts"));
         builder.Entity<AccountCategoryLog>(e => e.ToTable("AccountCategoryLogs", "accounts"));
 
         // --- TRANSACTIONS SCHEMA ---
-        builder.Entity<Transaction>(e => e.ToTable("Transactions", "transactions"));
+        builder.Entity<Transaction>(e =>
+        {
+            e.ToTable("Transactions", "transactions");
+            // Soft delete filter — excluded from all queries unless explicitly ignored // Moved to global filters
+            // e.HasQueryFilter(t => !t.IsDeleted);
+            // Critical performance indexes for dashboard/list queries
+            e.HasIndex(t => new { t.AccountId, t.Date });
+            e.HasIndex(t => t.TransactionCategoryId);
+            // Financial integrity: amounts must always be positive
+            e.ToTable(tb => tb.HasCheckConstraint("CK_Transaction_Amount_Positive", "\"Amount\" > 0"));
+        });
         builder.Entity<TransactionCategory>(e =>
         {
             e.ToTable("TransactionCategories", "transactions");
             e.HasIndex(tc => new { tc.UserId, tc.Name }).IsUnique();
+            // e.HasQueryFilter(tc => !tc.IsDeleted); // Moved to global filters
         });
         builder.Entity<TransactionLog>(e => e.ToTable("TransactionLogs", "transactions"));
         builder.Entity<TransactionCategoryLog>(e => e.ToTable("TransactionCategoryLogs", "transactions"));
@@ -192,5 +210,59 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         // --- FEEDBACK SCHEMA ---
         builder.Entity<Feedback>(e => e.ToTable("Feedbacks", "feedback"));
         builder.Entity<FeedbackLog>(e => e.ToTable("FeedbackLogs", "feedback"));
+
+        // --- Soft Delete Global Filters ---
+        builder.Entity<Transaction>().HasQueryFilter(t => !t.IsDeleted);
+        builder.Entity<Account>().HasQueryFilter(a => !a.IsDeleted);
+        builder.Entity<AccountCategory>().HasQueryFilter(c => !c.IsDeleted);
+        builder.Entity<TransactionCategory>().HasQueryFilter(c => !c.IsDeleted);
+        builder.Entity<Budget>().HasQueryFilter(b => !b.IsDeleted);
+        builder.Entity<RecurringTransaction>().HasQueryFilter(rt => !rt.IsDeleted);
+
+        // --- Budget Configuration ---
+        builder.Entity<Budget>()
+            .Property(b => b.Amount)
+            .HasColumnType("numeric(18,2)");
+
+        builder.Entity<Budget>()
+            .HasOne(b => b.User)
+            .WithMany()
+            .HasForeignKey(b => b.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<Budget>()
+            .HasOne(b => b.TransactionCategory)
+            .WithMany()
+            .HasForeignKey(b => b.TransactionCategoryId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.Entity<Budget>()
+            .HasIndex(b => new { b.UserId, b.TransactionCategoryId });
+        
+        builder.Entity<Budget>()
+            .ToTable(b => b.HasCheckConstraint("CK_Budget_Amount", "\"Amount\" > 0"));
+
+        // --- Recurring Transaction Configuration ---
+        builder.Entity<RecurringTransaction>(e =>
+        {
+            e.ToTable("RecurringTransactions", "transactions");
+            
+            e.Property(rt => rt.Amount)
+                .HasColumnType("numeric(18,2)");
+
+            e.HasOne(rt => rt.Account)
+                .WithMany()
+                .HasForeignKey(rt => rt.AccountId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasOne(rt => rt.TransactionCategory)
+                .WithMany()
+                .HasForeignKey(rt => rt.TransactionCategoryId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            e.HasIndex(rt => new { rt.UserId, rt.NextProcessDate, rt.IsActive });
+            
+            e.ToTable(tb => tb.HasCheckConstraint("CK_RecurringTransaction_Amount_Positive", "\"Amount\" > 0"));
+        });
     }
 }

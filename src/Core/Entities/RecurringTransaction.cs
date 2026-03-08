@@ -1,0 +1,26 @@
+using Domain.Enums;
+
+namespace Domain.Entities;
+
+public class RecurringTransaction : BaseEntity
+{
+    public required string UserId { get; set; }
+    
+    public int AccountId { get; set; }
+    public Account Account { get; set; } = null!;
+
+    public int? TransactionCategoryId { get; set; }
+    public TransactionCategory? TransactionCategory { get; set; }
+
+    public required string Description { get; set; }
+    public decimal Amount { get; set; }
+    public TransactionType Type { get; set; }
+    
+    public RecurrenceFrequency Frequency { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    
+    public DateTime NextProcessDate { get; set; }
+    public bool IsActive { get; set; } = true;
+    public DateTime? LastProcessedDate { get; set; }
+}

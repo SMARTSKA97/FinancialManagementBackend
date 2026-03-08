@@ -11,17 +11,19 @@ public class AccountService : IAccountService
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ICacheService _cache;
 
-    public AccountService(IApplicationDbContext context, IMapper mapper)
+    public AccountService(IApplicationDbContext context, IMapper mapper, ICacheService cache)
     {
         _context = context;
         _mapper = mapper;
+        _cache = cache;
     }
 
     public async Task<Result<PaginatedResult<AccountDto>>> GetPagedAccountsAsync(string userId, QueryParameters queryParams)
     {
         var queryable = _context.Accounts
-            .Where(a => a.UserId == userId)
+            .Where(a => a.UserId == userId && !a.IsDeleted)
             .Include(a => a.AccountCategory)
             .AsQueryable();
 
@@ -35,8 +37,16 @@ public class AccountService : IAccountService
 
         var totalRecords = await queryable.CountAsync();
 
+        // Apply sorting
+        queryable = queryParams.SortBy?.ToLower() switch
+        {
+            "name" => queryParams.SortOrder == "desc" ? queryable.OrderByDescending(a => a.Name) : queryable.OrderBy(a => a.Name),
+            "balance" => queryParams.SortOrder == "desc" ? queryable.OrderByDescending(a => a.Balance) : queryable.OrderBy(a => a.Balance),
+            "category" or "accountcategoryname" => queryParams.SortOrder == "desc" ? queryable.OrderByDescending(a => a.AccountCategory.Name) : queryable.OrderBy(a => a.AccountCategory.Name),
+            _ => queryable.OrderBy(a => a.Name)
+        };
+
         var items = await queryable
-            .OrderBy(a => a.Name)
             .Skip((queryParams.PageNumber - 1) * queryParams.PageSize)
             .Take(queryParams.PageSize)
             .ToListAsync();
@@ -50,9 +60,28 @@ public class AccountService : IAccountService
         return Result.Success(pagedDto);
     }
 
+    public async Task<Result<List<AccountDto>>> GetAllAccountsAsync(string userId)
+    {
+        var items = await _context.Accounts
+            .Where(a => a.UserId == userId && !a.IsDeleted)
+            .OrderBy(a => a.Name)
+            .ToListAsync();
+
+        return Result.Success(_mapper.Map<List<AccountDto>>(items));
+    }
+
     public async Task<Result<AccountDto>> UpsertAccountAsync(string userId, UpsertAccountDto dto)
     {
         Account? account = null;
+        var normalizedName = dto.Name.Trim().ToLower();
+
+        var exists = await _context.Accounts.AnyAsync(a => 
+            a.UserId == userId && 
+            a.Name.ToLower() == normalizedName && 
+            (!dto.Id.HasValue || a.Id != dto.Id.Value));
+
+        if (exists)
+            return Result.Failure<AccountDto>(new Error("Account.Duplicate", $"An account with the name '{dto.Name}' already exists."));
 
         if (dto.Id.HasValue && dto.Id > 0)
         {
@@ -82,6 +111,7 @@ public class AccountService : IAccountService
         // account = await _context.Accounts.Include(a => a.AccountCategory).FirstAsync(a => a.Id == account.Id); 
 
         var resultDto = _mapper.Map<AccountDto>(account);
+        await _cache.RemoveByPrefixAsync($"dash::{userId}:"); // Invalidate net worth
         return Result.Success(resultDto);
     }
 
@@ -91,9 +121,12 @@ public class AccountService : IAccountService
         if (account == null || account.UserId != userId)
             return Result.Failure<bool>(new Error("Account.NotFound", "Account not found."));
 
-        _context.Accounts.Remove(account);
+        account.IsDeleted = true;
+        account.DeletedAt = DateTime.UtcNow;
+        _context.Accounts.Update(account);
         await _context.SaveChangesAsync();
 
+        await _cache.RemoveByPrefixAsync($"dash::{userId}:"); // Invalidate net worth
         return Result.Success(true);
     }
 }

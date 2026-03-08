@@ -1,3 +1,4 @@
+using Application;
 using Application.Common.Models;
 using Application.DTOs.RecurringTransactions;
 using Application.Features.RecurringTransactions.Commands;

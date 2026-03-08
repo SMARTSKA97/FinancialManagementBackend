@@ -63,9 +63,10 @@ jobs:
         # Note: We must first add the path to global tools to the system path
         run: |
           export PATH="$PATH:$HOME/.dotnet/tools"
-          # The connection string is overridden via environment variable
-          export ConnectionStrings__DefaultConnection="${{ secrets.DB_ADMIN_CONNECTION_STRING }}"
-          dotnet ef database update --project src/Infrastructure/Infrastructure.csproj --startup-project src/Presentation/API.csproj
+          dotnet ef database update \
+            --project src/Infrastructure/Infrastructure.csproj \
+            --startup-project src/Presentation/API.csproj \
+            --connection "${{ secrets.DB_ADMIN_CONNECTION_STRING }}"
 
       - name: Trigger Render Deployment
         uses: fjogeleit/http-request-action@v1.15.0

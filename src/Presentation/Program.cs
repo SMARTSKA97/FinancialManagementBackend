@@ -1,4 +1,4 @@
-﻿using API.Extensions;
+using API.Extensions;
 using API.Middleware;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -11,13 +11,24 @@ using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((ctx, lc) => lc
-    .ReadFrom.Configuration(ctx.Configuration)
-    .Enrich.FromLogContext()
-    .WriteTo.Console(new CompactJsonFormatter())
-    .WriteTo.File("logs/app-.txt",
+builder.Host.UseSerilog((ctx, lc) => 
+{
+    lc.ReadFrom.Configuration(ctx.Configuration)
+      .Enrich.FromLogContext();
+
+    if (ctx.HostingEnvironment.IsDevelopment())
+    {
+        lc.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}");
+    }
+    else
+    {
+        lc.WriteTo.Console(new CompactJsonFormatter());
+    }
+
+    lc.WriteTo.File("logs/app-.txt",
         rollingInterval: RollingInterval.Day,
-        retainedFileCountLimit: 30));
+        retainedFileCountLimit: 30);
+});
 
 // --- Dependency Injection Setup ---
 // This handles all service registrations (Application, Infrastructure, API)

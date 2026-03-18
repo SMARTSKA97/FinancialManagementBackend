@@ -1,4 +1,4 @@
-﻿using Application.Common.Models;
+using Application.Common.Models;
 using Application.DTOs.Transactions;
 
 namespace Application.Contracts;
@@ -11,4 +11,5 @@ public interface ITransactionService
     Task<Result<bool>> CreateTransferAsync(string userId, int sourceAccountId, CreateTransferDto dto);
     Task<Result<bool>> SwitchAccountAsync(string userId, int transactionId, int destinationAccountId);
     Task<Result<BulkInsertResponseDto>> BulkUpsertTransactionsAsync(string userId, BulkTransactionPayloadDto payload);
+    Task<Result<TransactionPageResultDto>> GetAllTransactionsAsync(string userId, QueryParameters queryParams);
 }

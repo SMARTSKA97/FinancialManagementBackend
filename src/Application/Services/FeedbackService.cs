@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+
 using Application.Common.Models;
 using Application.Contracts;
 using Application.DTOs.Feedback;
@@ -9,17 +9,20 @@ namespace Application.Services;
 public class FeedbackService : IFeedbackService
 {
     private readonly IApplicationDbContext _context;
-    private readonly IMapper _mapper;
-
-    public FeedbackService(IApplicationDbContext context, IMapper mapper)
+    public FeedbackService(IApplicationDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<Result<bool>> CreateFeedbackAsync(CreateFeedbackDto dto)
     {
-        var feedback = _mapper.Map<Feedback>(dto);
+        var feedback = new Feedback
+        {
+            Name = dto.Name,
+            Email = dto.Email,
+            Type = dto.Type,
+            Description = dto.Description
+        };
 
         _context.Feedbacks.Add(feedback);
         await _context.SaveChangesAsync();

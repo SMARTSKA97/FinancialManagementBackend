@@ -1,4 +1,4 @@
-﻿using Application.Contracts;
+using Application.Contracts;
 using FluentValidation;
 using System.Reflection;
 using Application.DTOs.AccountCategory;
@@ -12,7 +12,6 @@ public static class ApplicationServiceExtensions
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
 
@@ -24,6 +23,10 @@ public static class ApplicationServiceExtensions
         services.AddScoped<ICategoryService<TransactionCategoryDto, UpsertTransactionCategoryDto>, TransactionCategoryService>();
 
         services.AddScoped<IDashboardService, DashboardService>();
+
+        services.AddScoped<IssueRankingService>();
+        services.AddScoped<IssueSimilarityService>();
+        services.AddScoped<TaxonomySeederService>();
 
         return services;
     }

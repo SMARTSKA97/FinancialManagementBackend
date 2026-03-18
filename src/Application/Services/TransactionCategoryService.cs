@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+
 using Application.Common.Models;
 using Application.Contracts;
 using Application.DTOs.Categories;
@@ -12,15 +12,12 @@ namespace Application.Services;
 public class TransactionCategoryService : ICategoryService<TransactionCategoryDto, UpsertTransactionCategoryDto>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IMapper _mapper;
     private readonly ICacheService _cache;
 
     private static string AllKey(string userId) => $"tc:all:{userId}";
-
-    public TransactionCategoryService(IApplicationDbContext context, IMapper mapper, ICacheService cache)
+    public TransactionCategoryService(IApplicationDbContext context, ICacheService cache)
     {
         _context = context;
-        _mapper = mapper;
         _cache = cache;
     }
 
@@ -52,7 +49,7 @@ public class TransactionCategoryService : ICategoryService<TransactionCategoryDt
             .Take(queryParams.PageSize)
             .ToListAsync();
 
-        var mapped = _mapper.Map<List<TransactionCategoryDto>>(items);
+        var mapped = items.Select(MapToDto).ToList();
         var result = new PaginatedResult<TransactionCategoryDto>(mapped, totalRecords, queryParams.PageNumber, queryParams.PageSize);
         return Result.Success(result);
     }
@@ -68,9 +65,9 @@ public class TransactionCategoryService : ICategoryService<TransactionCategoryDt
             .Where(c => c.UserId == userId && !c.IsDeleted)
             .ToListAsync();
 
-        var mapped = _mapper.Map<IReadOnlyList<TransactionCategoryDto>>(allCategories);
+        var mapped = allCategories.Select(MapToDto).ToList();
         await _cache.SetAsync(cacheKey, mapped, TimeSpan.FromHours(1));
-        return Result.Success(mapped);
+        return Result.Success<IReadOnlyList<TransactionCategoryDto>>(mapped);
     }
 
     public async Task<Result<TransactionCategoryDto>> UpsertAsync(string userId, UpsertTransactionCategoryDto dto)
@@ -84,13 +81,16 @@ public class TransactionCategoryService : ICategoryService<TransactionCategoryDt
             if (category == null || category.UserId != userId)
                 return Result.Failure<TransactionCategoryDto>(new Error("Category.NotFound", "Category not found."));
 
-            _mapper.Map(dto, category);
+            category.Name = dto.Name;
             _context.TransactionCategories.Update(category);
         }
         else
         {
-            category = _mapper.Map<TransactionCategory>(dto);
-            category.UserId = userId;
+            category = new TransactionCategory
+            {
+                Name = dto.Name,
+                UserId = userId
+            };
             _context.TransactionCategories.Add(category);
         }
 
@@ -98,7 +98,7 @@ public class TransactionCategoryService : ICategoryService<TransactionCategoryDt
         {
             await _context.SaveChangesAsync();
             await _cache.RemoveAsync(AllKey(userId)); // invalidate stale list
-            var resultDto = _mapper.Map<TransactionCategoryDto>(category);
+            var resultDto = MapToDto(category);
             return Result.Success(resultDto);
         }
         catch (DbUpdateException ex) when (ex.InnerException is PostgresException postgresEx && postgresEx.SqlState == "23505")
@@ -119,5 +119,14 @@ public class TransactionCategoryService : ICategoryService<TransactionCategoryDt
         await _context.SaveChangesAsync();
         await _cache.RemoveAsync(AllKey(userId));
         return Result.Success(true);
+    }
+
+    private TransactionCategoryDto MapToDto(TransactionCategory c)
+    {
+        return new TransactionCategoryDto
+        {
+            Id = c.Id,
+            Name = c.Name
+        };
     }
 }

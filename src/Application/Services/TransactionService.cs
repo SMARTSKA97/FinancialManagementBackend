@@ -1,6 +1,6 @@
-﻿namespace Application.Services;
+namespace Application.Services;
 
-using AutoMapper;
+
 using Application.Common.Models;
 using Application.Contracts;
 using Application.DTOs.Transactions;
@@ -10,14 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 public class TransactionService : ITransactionService
 {
-    private readonly IMapper _mapper;
     private readonly IApplicationDbContext _context;
     private readonly ICacheService _cache;
 
-    public TransactionService(IApplicationDbContext context, IMapper mapper, ICacheService cache)
+    public TransactionService(IApplicationDbContext context, ICacheService cache)
     {
         _context = context;
-        _mapper = mapper;
         _cache = cache;
     }
 
@@ -29,7 +27,6 @@ public class TransactionService : ITransactionService
 
         var queryable = _context.Transactions
             .Where(t => t.AccountId == accountId)
-            .Include(t => t.TransactionCategory)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(queryParams.GlobalSearch))
@@ -52,12 +49,14 @@ public class TransactionService : ITransactionService
         };
 
         var items = await queryable
+            .Include(t => t.TransactionCategory)
+            .Include(t => t.Account)
             .Skip((queryParams.PageNumber - 1) * queryParams.PageSize)
             .Take(queryParams.PageSize)
             .ToListAsync();
 
         var pagedDto = new PaginatedResult<TransactionDto>(
-            _mapper.Map<List<TransactionDto>>(items),
+            items.Select(MapToDto).ToList(),
             totalRecords,
             queryParams.PageNumber,
             queryParams.PageSize
@@ -83,13 +82,24 @@ public class TransactionService : ITransactionService
 
             oldAmount = transaction.Amount;
             oldType = transaction.Type;
-            _mapper.Map(dto, transaction);
+            transaction.Description = dto.Description;
+            transaction.Amount = dto.Amount;
+            transaction.Date = dto.Date;
+            transaction.Type = dto.Type;
+            transaction.TransactionCategoryId = dto.TransactionCategoryId;
             _context.Transactions.Update(transaction);
         }
         else
         {
-            transaction = _mapper.Map<Transaction>(dto);
-            transaction.AccountId = accountId;
+            transaction = new Transaction
+            {
+                Description = dto.Description,
+                Amount = dto.Amount,
+                Date = dto.Date,
+                Type = dto.Type,
+                TransactionCategoryId = dto.TransactionCategoryId,
+                AccountId = accountId
+            };
             _context.Transactions.Add(transaction);
         }
 
@@ -106,7 +116,7 @@ public class TransactionService : ITransactionService
             .Include(t => t.TransactionCategory)
             .FirstAsync(t => t.Id == transaction.Id);
 
-        var resultDto = _mapper.Map<TransactionDto>(resultTransactionWithCategory);
+        var resultDto = MapToDto(resultTransactionWithCategory);
         await _cache.RemoveByPrefixAsync($"dash::{userId}:"); // invalidates summary, category, insights
 
         return Result.Success(resultDto);
@@ -286,5 +296,137 @@ public class TransactionService : ITransactionService
             await transaction.RollbackAsync();
             return Result.Failure<BulkInsertResponseDto>(new Error("BulkInsert.Error", "An unexpected error occurred during bulk insert."));
         }
+    }
+    public async Task<Result<TransactionPageResultDto>> GetAllTransactionsAsync(string userId, QueryParameters queryParams)
+    {
+        // Get all account IDs for this user
+        var userAccountIds = await _context.Accounts
+            .Where(a => a.UserId == userId)
+            .Select(a => a.Id)
+            .ToListAsync();
+
+        if (!userAccountIds.Any())
+        {
+            return Result.Success(new TransactionPageResultDto
+            {
+                Transactions = new PaginatedResult<TransactionDto>(new List<TransactionDto>(), 0, 1, queryParams.PageSize),
+                AvailableCategories = new List<string>()
+            });
+        }
+
+        // Parse month/year from Filters, default to current month/year
+        var now = DateTime.UtcNow;
+        int month = now.Month;
+        int year = now.Year;
+
+        if (queryParams.Filters.TryGetValue("month", out var monthStr) && int.TryParse(monthStr, out var parsedMonth))
+            month = parsedMonth;
+        if (queryParams.Filters.TryGetValue("year", out var yearStr) && int.TryParse(yearStr, out var parsedYear))
+            year = parsedYear;
+
+        var startOfMonth = new DateTime(year, month, 1, 0, 0, 0, DateTimeKind.Utc);
+        var endOfMonth = startOfMonth.AddMonths(1).AddTicks(-1);
+
+        // Base queryable: all transactions across user's accounts
+        var allTransactions = _context.Transactions
+            .Where(t => userAccountIds.Contains(t.AccountId))
+            .Include(t => t.TransactionCategory)
+            .Include(t => t.Account);
+
+        // --- Available categories ---
+        var availableCategories = await _context.TransactionCategories
+            .Where(tc => tc.UserId == userId)
+            .Select(tc => tc.Name)
+            .Distinct()
+            .ToListAsync();
+
+        if (!availableCategories.Contains("Transfer"))
+        {
+            availableCategories.Add("Transfer");
+        }
+        
+        availableCategories = availableCategories.OrderBy(name => name).ToList();
+
+        // --- Balance Brought Forward: net of all transactions BEFORE the selected month ---
+        var bfIncome = await _context.Transactions
+            .Where(t => userAccountIds.Contains(t.AccountId) && t.Date < startOfMonth && t.Type == TransactionType.Income)
+            .SumAsync(t => t.Amount);
+
+        var bfExpenses = await _context.Transactions
+            .Where(t => userAccountIds.Contains(t.AccountId) && t.Date < startOfMonth && t.Type == TransactionType.Expense)
+            .SumAsync(t => t.Amount);
+
+        var balanceBF = bfIncome - bfExpenses;
+
+        // --- Monthly totals (respects category filter for consistency with table) ---
+        var monthlyQuery = allTransactions
+            .Where(t => t.Date >= startOfMonth && t.Date <= endOfMonth);
+
+        if (queryParams.Filters.TryGetValue("categoryName", out var categoryName) && !string.IsNullOrWhiteSpace(categoryName))
+        {
+            monthlyQuery = monthlyQuery.Where(t =>
+                t.TransactionCategory != null && t.TransactionCategory.Name == categoryName);
+        }
+
+        var totalIncome = await monthlyQuery
+            .Where(t => t.Type == TransactionType.Income)
+            .SumAsync(t => t.Amount);
+
+        var totalExpenses = await monthlyQuery
+            .Where(t => t.Type == TransactionType.Expense)
+            .SumAsync(t => t.Amount);
+
+        // --- Filtered queryable for the transaction list ---
+        var filteredQuery = monthlyQuery; // Reuse the filtered monthly query
+
+        // Global search (applied only to the list, not the high-level monthly summaries)
+        if (!string.IsNullOrWhiteSpace(queryParams.GlobalSearch))
+        {
+            var search = queryParams.GlobalSearch.Trim();
+            filteredQuery = filteredQuery.Where(t =>
+                t.Description.Contains(search) ||
+                (t.TransactionCategory != null && t.TransactionCategory.Name.Contains(search)) ||
+                t.Account.Name.Contains(search));
+        }
+
+        var totalRecords = await filteredQuery.CountAsync();
+
+        var items = await filteredQuery
+            .Include(t => t.TransactionCategory)
+            .Include(t => t.Account)
+            .OrderByDescending(t => t.Date)
+            .ThenByDescending(t => t.Id)
+            .Skip((queryParams.PageNumber - 1) * queryParams.PageSize)
+            .Take(queryParams.PageSize)
+            .ToListAsync();
+
+        var dtos = items.Select(MapToDto).ToList();
+
+        var result = new TransactionPageResultDto
+        {
+            Transactions = new PaginatedResult<TransactionDto>(dtos, totalRecords, queryParams.PageNumber, queryParams.PageSize),
+            BalanceBroughtForward = balanceBF,
+            TotalIncome = totalIncome,
+            TotalExpenses = totalExpenses,
+            TotalSavings = totalIncome - totalExpenses,
+            AvailableCategories = availableCategories
+        };
+
+        return Result.Success(result);
+    }
+
+    private TransactionDto MapToDto(Transaction t)
+    {
+        return new TransactionDto
+        {
+            Id = t.Id,
+            Description = t.Description,
+            Amount = t.Amount,
+            Date = t.Date,
+            Type = t.Type,
+            AccountId = t.AccountId,
+            AccountName = t.Account?.Name,
+            CategoryName = t.TransactionCategory?.Name ?? (t.Description.Contains("Transfer") ? "Transfer" : null)
+        };
     }
 }

@@ -29,11 +29,27 @@ public class TransactionService : ITransactionService
             .Where(t => t.AccountId == accountId)
             .AsQueryable();
 
+        // Parse month/year from Filters
+        var now = DateTime.UtcNow;
+        if (queryParams.Filters.TryGetValue("month", out var monthStr) && int.TryParse(monthStr, out var month) && 
+            queryParams.Filters.TryGetValue("year", out var yearStr) && int.TryParse(yearStr, out var year))
+        {
+            var startOfMonth = new DateTime(year, month, 1, 0, 0, 0, DateTimeKind.Utc);
+            var endOfMonth = startOfMonth.AddMonths(1).AddTicks(-1);
+            queryable = queryable.Where(t => t.Date >= startOfMonth && t.Date <= endOfMonth);
+        }
+
+        // Category Filter
+        if (queryParams.Filters.TryGetValue("categoryName", out var categoryName) && !string.IsNullOrWhiteSpace(categoryName))
+        {
+            queryable = queryable.Where(t => t.TransactionCategory != null && t.TransactionCategory.Name == categoryName);
+        }
+
         if (!string.IsNullOrWhiteSpace(queryParams.GlobalSearch))
         {
-            var search = queryParams.GlobalSearch.Trim();
-            queryable = queryable.Where(t => t.Description.Contains(search) ||
-                (t.TransactionCategory != null && t.TransactionCategory.Name.Contains(search)));
+            var search = queryParams.GlobalSearch.Trim().ToLower();
+            queryable = queryable.Where(t => t.Description.ToLower().Contains(search) ||
+                (t.TransactionCategory != null && t.TransactionCategory.Name.ToLower().Contains(search)));
         }
 
         var totalRecords = await queryable.CountAsync();
@@ -382,11 +398,11 @@ public class TransactionService : ITransactionService
         // Global search (applied only to the list, not the high-level monthly summaries)
         if (!string.IsNullOrWhiteSpace(queryParams.GlobalSearch))
         {
-            var search = queryParams.GlobalSearch.Trim();
+            var search = queryParams.GlobalSearch.Trim().ToLower();
             filteredQuery = filteredQuery.Where(t =>
-                t.Description.Contains(search) ||
-                (t.TransactionCategory != null && t.TransactionCategory.Name.Contains(search)) ||
-                t.Account.Name.Contains(search));
+                t.Description.ToLower().Contains(search) ||
+                (t.TransactionCategory != null && t.TransactionCategory.Name.ToLower().Contains(search)) ||
+                t.Account.Name.ToLower().Contains(search));
         }
 
         var totalRecords = await filteredQuery.CountAsync();

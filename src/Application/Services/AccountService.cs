@@ -27,10 +27,10 @@ public class AccountService : IAccountService
 
         if (!string.IsNullOrWhiteSpace(queryParams.GlobalSearch))
         {
-            var search = queryParams.GlobalSearch.Trim();
+            var search = queryParams.GlobalSearch.Trim().ToLower();
             queryable = queryable.Where(a =>
-                a.Name.Contains(search) ||
-                (a.AccountCategory != null && a.AccountCategory.Name.Contains(search)));
+                a.Name.ToLower().Contains(search) ||
+                (a.AccountCategory != null && a.AccountCategory.Name.ToLower().Contains(search)));
         }
 
         var totalRecords = await queryable.CountAsync();

@@ -25,7 +25,7 @@ public sealed class RedisCacheService : ICacheService
 {
     private readonly IMemoryCache _l1;
     private readonly IDatabase _db;
-    private readonly IServer _server;
+    private readonly IServer? _server;
     private readonly ILogger<RedisCacheService> _logger;
 
     // L1 TTL is intentionally shorter than L2 so stale reads are rare
@@ -41,9 +41,16 @@ public sealed class RedisCacheService : ICacheService
         _db = muxer.GetDatabase();
         _logger = logger;
 
-        // GetServer is needed for pattern-delete (SCAN). Uses the first endpoint.
-        var endpoint = muxer.GetEndPoints().First();
-        _server = muxer.GetServer(endpoint);
+        // GetServer is needed for pattern-delete (SCAN). Handle offline scenario.
+        var endpoints = muxer.GetEndPoints();
+        if (endpoints.Any())
+        {
+            _server = muxer.GetServer(endpoints.First());
+        }
+        else
+        {
+            _logger.LogWarning("[Cache] No Redis endpoints available. L2 features will be disabled.");
+        }
     }
 
     /// <inheritdoc />
@@ -128,6 +135,7 @@ public sealed class RedisCacheService : ICacheService
     {
         try
         {
+            if (_server == null) return;
             var pattern = $"{prefix}*";
             await foreach (var key in _server.KeysAsync(pattern: pattern))
             {

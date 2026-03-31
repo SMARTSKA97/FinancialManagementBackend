@@ -21,9 +21,16 @@ public class RedisEmailService : IEmailService
 
     public async Task SendEmailAsync(MailRequest mailRequest)
     {
-        var db = _redis.GetDatabase();
         var json = JsonSerializer.Serialize(mailRequest);
-        await db.ListRightPushAsync(QueueName, json);
-        _logger.LogInformation("Email to {To} queued into Redis.", mailRequest.To);
+        try 
+        {
+            var db = _redis.GetDatabase();
+            await db.ListRightPushAsync(QueueName, json);
+            _logger.LogInformation("Email to {To} queued into Redis.", mailRequest.To);
+        }
+        catch (RedisConnectionException)
+        {
+            _logger.LogWarning("Redis is unavailable. Email to {To} was logged instead of queued: {Subject}", mailRequest.To, mailRequest.Subject);
+        }
     }
 }

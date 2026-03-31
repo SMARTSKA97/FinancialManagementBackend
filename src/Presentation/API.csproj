@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
@@ -27,7 +27,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-	  <VersionPrefix>4.2.1</VersionPrefix>
+	  <VersionPrefix>4.6.0</VersionPrefix>
 	  <EnvironmentName Condition="'$(EnvironmentName)' == ''">Development</EnvironmentName>
 	  <VersionSuffix>$(EnvironmentName.ToLower())-$([System.DateTime]::UtcNow.ToString(yyyyMMdd-HHmm))</VersionSuffix>
     <RootNamespace>API</RootNamespace>

@@ -31,8 +31,16 @@ public static class InfrastructureServiceExtensions
             o => o.MigrationsHistoryTable("__EFMigrationsHistory", "identity")));
 
         // 2.1 Register Redis connection
-        services.AddSingleton<IConnectionMultiplexer>(sp =>
-            ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis") ?? "localhost"));
+        // 2.1 Register Redis connection with AbortOnConnectFail=false for local dev resilience
+        services.AddSingleton<IConnectionMultiplexer>(sp => 
+        {
+            var connectionString = configuration.GetConnectionString("Redis") ?? "localhost";
+            var options = ConfigurationOptions.Parse(connectionString);
+            options.AbortOnConnectFail = false;
+            options.ConnectRetry = 1;
+            options.ConnectTimeout = 2000;
+            return ConnectionMultiplexer.Connect(options);
+        });
 
         // 2.2 Register two-tier cache service (IMemoryCache L1 + Redis L2)
         // L1 serves most reads with zero Upstash commands; Redis only hit on L1 miss.

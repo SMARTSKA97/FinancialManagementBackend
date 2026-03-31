@@ -13,6 +13,10 @@ public interface IApplicationDbContext
     DbSet<Budget> Budgets { get; }
     DbSet<RecurringTransaction> RecurringTransactions { get; }
     DbSet<Subscription> Subscriptions { get; }
+
+    DbSet<Issue> Issues { get; }
+    DbSet<IssueTaxonomy> IssueTaxonomies { get; }
+    DbSet<IssueComment> IssueComments { get; }
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+
 using Application.Common.Models;
 using Application.Contracts;
 using Application.DTOs.AccountCategory;
@@ -12,16 +12,12 @@ namespace Application.Services;
 public class AccountCategoryService : ICategoryService<AccountCategoryDto, UpsertAccountCategoryDto>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IMapper _mapper;
     private readonly ICacheService _cache;
 
-    // Cache key helpers — short prefixes save Upstash storage bytes
     private static string AllKey(string userId) => $"ac:all:{userId}";
-
-    public AccountCategoryService(IApplicationDbContext context, IMapper mapper, ICacheService cache)
+    public AccountCategoryService(IApplicationDbContext context, ICacheService cache)
     {
         _context = context;
-        _mapper = mapper;
         _cache = cache;
     }
 
@@ -53,7 +49,7 @@ public class AccountCategoryService : ICategoryService<AccountCategoryDto, Upser
             .Take(queryParams.PageSize)
             .ToListAsync();
 
-        var mapped = _mapper.Map<List<AccountCategoryDto>>(items);
+        var mapped = items.Select(MapToDto).ToList();
         var result = new PaginatedResult<AccountCategoryDto>(mapped, totalRecords, queryParams.PageNumber, queryParams.PageSize);
         return Result.Success(result);
     }
@@ -69,9 +65,9 @@ public class AccountCategoryService : ICategoryService<AccountCategoryDto, Upser
             .Where(c => c.UserId == userId && !c.IsDeleted)
             .ToListAsync();
 
-        var mapped = _mapper.Map<IReadOnlyList<AccountCategoryDto>>(allCategories);
+        var mapped = allCategories.Select(MapToDto).ToList();
         await _cache.SetAsync(cacheKey, mapped, TimeSpan.FromHours(1));
-        return Result.Success(mapped);
+        return Result.Success<IReadOnlyList<AccountCategoryDto>>(mapped);
     }
 
     public async Task<Result<AccountCategoryDto>> UpsertAsync(string userId, UpsertAccountCategoryDto dto)
@@ -90,8 +86,11 @@ public class AccountCategoryService : ICategoryService<AccountCategoryDto, Upser
         }
         else
         {
-            category = _mapper.Map<AccountCategory>(dto);
-            category.UserId = userId;
+            category = new AccountCategory
+            {
+                Name = dto.Name,
+                UserId = userId
+            };
             _context.AccountCategories.Add(category);
         }
 
@@ -99,7 +98,7 @@ public class AccountCategoryService : ICategoryService<AccountCategoryDto, Upser
         {
             await _context.SaveChangesAsync();
             await _cache.RemoveAsync(AllKey(userId)); // invalidate stale list
-            var resultDto = _mapper.Map<AccountCategoryDto>(category);
+            var resultDto = MapToDto(category);
             return Result.Success(resultDto);
         }
         catch (DbUpdateException ex) when (ex.InnerException is PostgresException postgresEx && postgresEx.SqlState == "23505")
@@ -120,5 +119,14 @@ public class AccountCategoryService : ICategoryService<AccountCategoryDto, Upser
         await _context.SaveChangesAsync();
         await _cache.RemoveAsync(AllKey(userId));
         return Result.Success(true);
+    }
+
+    private AccountCategoryDto MapToDto(AccountCategory c)
+    {
+        return new AccountCategoryDto
+        {
+            Id = c.Id,
+            Name = c.Name
+        };
     }
 }

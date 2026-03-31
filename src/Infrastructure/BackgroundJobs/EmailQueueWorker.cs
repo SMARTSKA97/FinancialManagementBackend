@@ -53,10 +53,14 @@ public class EmailQueueWorker : BackgroundService
                 // Task was canceled due to application shutdown
                 break;
             }
+            catch (RedisConnectionException ex)
+            {
+                _logger.LogWarning("Redis is not available at {Endpoint}. EmailWorker will wait 30 seconds before retrying. Local dev can continue without Redis.", _redis.Configuration);
+                try { await Task.Delay(30000, stoppingToken); } catch (OperationCanceledException) { break; }
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing email queue.");
-                // Prevent infinite tight loop on persistent error, using Safe Task.Delay
                 try { await Task.Delay(5000, stoppingToken); } catch (OperationCanceledException) { break; }
             }
         }
@@ -64,6 +68,20 @@ public class EmailQueueWorker : BackgroundService
         _logger.LogInformation("EmailQueueWorker stopping.");
     }
 
+    public async Task SendEmailAsync(MailRequest mailRequest)
+    {
+        var json = JsonSerializer.Serialize(mailRequest);
+        try 
+        {
+            var db = _redis.GetDatabase();
+            await db.ListRightPushAsync(QueueName, json);
+            _logger.LogInformation("Email to {To} queued into Redis.", mailRequest.To);
+        }
+        catch (RedisConnectionException)
+        {
+            _logger.LogWarning("Redis is unavailable. Email to {To} was logged instead of queued: {Body}", mailRequest.To, mailRequest.Body);
+        }
+    }
     private async Task ProcessEmailAsync(string message)
     {
         try

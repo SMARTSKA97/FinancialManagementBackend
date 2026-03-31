@@ -121,7 +121,7 @@ public class DashboardService : IDashboardService
 
         var now = DateTime.UtcNow;
         var startFilter = startDate ?? new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
-        var endFilter = endDate ?? startFilter.AddMonths(1).AddDays(-1);
+        var endFilter = endDate ?? startFilter.AddMonths(1).AddTicks(-1);
 
         var monthlyTransactions = _context.Transactions
             .Where(t => t.AccountId == accountId && t.Date >= startFilter && t.Date <= endFilter);

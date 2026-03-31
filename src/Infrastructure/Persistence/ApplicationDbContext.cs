@@ -31,6 +31,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<TransactionCategoryLog> TransactionCategoryLogs { get; set; }
     public DbSet<FeedbackLog> FeedbackLogs { get; set; }
 
+    // --- DbSets for Issue System ---
+    public DbSet<Issue> Issues { get; set; }
+    public DbSet<IssueTaxonomy> IssueTaxonomies { get; set; }
+    public DbSet<IssueComment> IssueComments { get; set; }
+
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHttpContextAccessor httpContextAccessor) : base(options)
     {
         _httpContextAccessor = httpContextAccessor;
@@ -278,6 +283,24 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .OnDelete(DeleteBehavior.Cascade);
                 
             e.HasIndex(s => new { s.UserId, s.Name }).IsUnique();
+        // --- ISSUE SCHEMA ---
+        builder.Entity<Issue>(e =>
+        {
+            e.ToTable("Issues", "issue");
+            e.HasOne(i => i.Category).WithMany().HasForeignKey(i => i.CategoryId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(i => i.Subcategory).WithMany().HasForeignKey(i => i.SubcategoryId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<IssueTaxonomy>(e =>
+        {
+            e.ToTable("IssueTaxonomies", "issue");
+            e.HasOne(t => t.Parent).WithMany(p => p.Children).HasForeignKey(t => t.ParentId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<IssueComment>(e =>
+        {
+            e.ToTable("IssueComments", "issue");
+            e.HasOne(c => c.Issue).WithMany(i => i.Comments).HasForeignKey(c => c.IssueId).OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

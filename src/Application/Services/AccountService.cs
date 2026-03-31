@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+
 using Application.Common.Models;
 using Application.Contracts;
 using Application.DTOs.Accounts;
@@ -10,13 +10,11 @@ namespace Application.Services;
 public class AccountService : IAccountService
 {
     private readonly IApplicationDbContext _context;
-    private readonly IMapper _mapper;
     private readonly ICacheService _cache;
 
-    public AccountService(IApplicationDbContext context, IMapper mapper, ICacheService cache)
+    public AccountService(IApplicationDbContext context, ICacheService cache)
     {
         _context = context;
-        _mapper = mapper;
         _cache = cache;
     }
 
@@ -29,10 +27,10 @@ public class AccountService : IAccountService
 
         if (!string.IsNullOrWhiteSpace(queryParams.GlobalSearch))
         {
-            var search = queryParams.GlobalSearch.Trim();
+            var search = queryParams.GlobalSearch.Trim().ToLower();
             queryable = queryable.Where(a =>
-                a.Name.Contains(search) ||
-                (a.AccountCategory != null && a.AccountCategory.Name.Contains(search)));
+                a.Name.ToLower().Contains(search) ||
+                (a.AccountCategory != null && a.AccountCategory.Name.ToLower().Contains(search)));
         }
 
         var totalRecords = await queryable.CountAsync();
@@ -52,7 +50,7 @@ public class AccountService : IAccountService
             .ToListAsync();
 
         var pagedDto = new PaginatedResult<AccountDto>(
-            _mapper.Map<List<AccountDto>>(items),
+            items.Select(MapToDto).ToList(),
             totalRecords,
             queryParams.PageNumber,
             queryParams.PageSize
@@ -67,7 +65,7 @@ public class AccountService : IAccountService
             .OrderBy(a => a.Name)
             .ToListAsync();
 
-        return Result.Success(_mapper.Map<List<AccountDto>>(items));
+        return Result.Success(items.Select(MapToDto).ToList());
     }
 
     public async Task<Result<AccountDto>> UpsertAccountAsync(string userId, UpsertAccountDto dto)
@@ -93,14 +91,21 @@ public class AccountService : IAccountService
             if (account == null || account.UserId != userId)
                 return Result.Failure<AccountDto>(new Error("Account.NotFound", "Account not found."));
 
-            _mapper.Map(dto, account);
+            account.Name = dto.Name;
+            account.Balance = dto.Balance;
+            account.AccountCategoryId = dto.AccountCategoryId;
             _context.Accounts.Update(account);
         }
         else
         {
             // Create Mode
-            account = _mapper.Map<Account>(dto);
-            account.UserId = userId;
+            account = new Account
+            {
+                Name = dto.Name,
+                Balance = dto.Balance,
+                AccountCategoryId = dto.AccountCategoryId,
+                UserId = userId
+            };
             _context.Accounts.Add(account);
         }
 
@@ -110,7 +115,7 @@ public class AccountService : IAccountService
         // Note: For simple update, memory object is usually enough, but if we need relations:
         // account = await _context.Accounts.Include(a => a.AccountCategory).FirstAsync(a => a.Id == account.Id); 
 
-        var resultDto = _mapper.Map<AccountDto>(account);
+        var resultDto = MapToDto(account);
         await _cache.RemoveByPrefixAsync($"dash::{userId}:"); // Invalidate net worth
         return Result.Success(resultDto);
     }
@@ -128,5 +133,16 @@ public class AccountService : IAccountService
 
         await _cache.RemoveByPrefixAsync($"dash::{userId}:"); // Invalidate net worth
         return Result.Success(true);
+    }
+
+    private AccountDto MapToDto(Account a)
+    {
+        return new AccountDto
+        {
+            Id = a.Id,
+            Name = a.Name,
+            Balance = a.Balance,
+            AccountCategoryName = a.AccountCategory?.Name ?? ""
+        };
     }
 }

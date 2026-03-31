@@ -12,7 +12,6 @@ public static class ApplicationServiceExtensions
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         services.AddMediatR(cfg => {
             cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
@@ -30,6 +29,10 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<Application.Features.Insights.IFinancialInsightsEngine, Application.Features.Insights.FinancialInsightsEngine>();
         services.AddScoped<Domain.Rules.IFinancialRule, Application.Features.Insights.Rules.HighSubscriptionSpendRule>();
+
+        services.AddScoped<IssueRankingService>();
+        services.AddScoped<IssueSimilarityService>();
+        services.AddScoped<TaxonomySeederService>();
 
         return services;
     }

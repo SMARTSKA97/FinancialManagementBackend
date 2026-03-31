@@ -11,13 +11,24 @@ using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((ctx, lc) => lc
-    .ReadFrom.Configuration(ctx.Configuration)
-    .Enrich.FromLogContext()
-    .WriteTo.Console(new CompactJsonFormatter())
-    .WriteTo.File("logs/app-.txt",
+builder.Host.UseSerilog((ctx, lc) => 
+{
+    lc.ReadFrom.Configuration(ctx.Configuration)
+      .Enrich.FromLogContext();
+
+    if (ctx.HostingEnvironment.IsDevelopment())
+    {
+        lc.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}");
+    }
+    else
+    {
+        lc.WriteTo.Console(new CompactJsonFormatter());
+    }
+
+    lc.WriteTo.File("logs/app-.txt",
         rollingInterval: RollingInterval.Day,
-        retainedFileCountLimit: 30));
+        retainedFileCountLimit: 30);
+});
 
 // --- Dependency Injection Setup ---
 // This handles all service registrations (Application, Infrastructure, API)
@@ -118,7 +129,7 @@ app.Use(async (context, next) =>
     context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
     context.Response.Headers.Append("X-Frame-Options", "DENY");
     context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
-    context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; object-src 'none'; base-uri 'self';");
+    context.Response.Headers.Append("Content-Security-Policy", "default-src 'self' https://finplanner.ska97homelab.uk; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://static.cloudflareinsights.com https://finplanner.ska97homelab.uk; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://finplanner.ska97homelab.uk; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https: https://www.google-analytics.com https://www.googletagmanager.com https://cloudflareinsights.com https://finplanner.ska97homelab.uk; object-src 'none'; base-uri 'self';");
     await next();
 });
 

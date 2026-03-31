@@ -1,4 +1,4 @@
-﻿using Domain.Enums;
+using Domain.Enums;
 
 namespace Application.DTOs.Transactions;
 
@@ -10,5 +10,6 @@ public class TransactionDto
     public DateTime Date { get; set; }
     public TransactionType Type { get; set; }
     public int AccountId { get; set; }
+    public string? AccountName { get; set; }
     public string? CategoryName { get; set; }
 }

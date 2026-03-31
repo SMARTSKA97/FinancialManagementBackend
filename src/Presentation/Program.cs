@@ -1,4 +1,4 @@
-﻿using API.Extensions;
+using API.Extensions;
 using API.Middleware;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -126,6 +126,13 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<SessionValidationMiddleware>();
 app.UseMiddleware<UpdateLastSeenMiddleware>();
+
+app.UseHangfireDashboard();
+
+Hangfire.RecurringJob.AddOrUpdate<Infrastructure.BackgroundJobs.RecurringTransactionJob>(
+    "process-recurring-transactions",
+    job => job.ProcessRecurringTransactionsAsync(),
+    Hangfire.Cron.Hourly());
 
 app.MapControllers();
 

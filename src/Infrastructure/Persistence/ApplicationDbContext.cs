@@ -1,4 +1,4 @@
-﻿using Application.Contracts;
+using Application.Contracts;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +22,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<Feedback> Feedbacks { get; set; }
     public DbSet<Budget> Budgets { get; set; }
     public DbSet<RecurringTransaction> RecurringTransactions { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
 
     // --- DbSets for Log Entities ---
     public DbSet<AccountLog> AccountLogs { get; set; }
@@ -218,6 +219,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<TransactionCategory>().HasQueryFilter(c => !c.IsDeleted);
         builder.Entity<Budget>().HasQueryFilter(b => !b.IsDeleted);
         builder.Entity<RecurringTransaction>().HasQueryFilter(rt => !rt.IsDeleted);
+        builder.Entity<Subscription>().HasQueryFilter(s => !s.IsDeleted);
 
         // --- Budget Configuration ---
         builder.Entity<Budget>()
@@ -263,6 +265,19 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             e.HasIndex(rt => new { rt.UserId, rt.NextProcessDate, rt.IsActive });
             
             e.ToTable(tb => tb.HasCheckConstraint("CK_RecurringTransaction_Amount_Positive", "\"Amount\" > 0"));
+        });
+
+        // --- Subscription Configuration ---
+        builder.Entity<Subscription>(e =>
+        {
+            e.ToTable("Subscriptions", "transactions");
+
+            e.HasOne(s => s.RecurringTransaction)
+                .WithOne(rt => rt.Subscription)
+                .HasForeignKey<Subscription>(s => s.RecurringTransactionId)
+                .OnDelete(DeleteBehavior.Cascade);
+                
+            e.HasIndex(s => new { s.UserId, s.Name }).IsUnique();
         });
     }
 }

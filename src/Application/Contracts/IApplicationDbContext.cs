@@ -12,6 +12,7 @@ public interface IApplicationDbContext
     DbSet<Feedback> Feedbacks { get; }
     DbSet<Budget> Budgets { get; }
     DbSet<RecurringTransaction> RecurringTransactions { get; }
+    DbSet<Subscription> Subscriptions { get; }
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

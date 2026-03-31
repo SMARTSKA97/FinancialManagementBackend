@@ -21,4 +21,14 @@ public class DashboardInsightsDto
 
     [JsonPropertyName("accountExtremes")]
     public List<GroupExtremeDto> AccountExtremes { get; set; } = new();
+
+    [JsonPropertyName("intelligence")]
+    public List<FinancialInsightDto> Intelligence { get; set; } = new();
+}
+
+public class FinancialInsightDto
+{
+    public string Title { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
+    public string Type { get; set; } = "Info";
 }

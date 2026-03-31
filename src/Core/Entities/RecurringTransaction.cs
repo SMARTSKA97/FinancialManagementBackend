@@ -23,4 +23,6 @@ public class RecurringTransaction : BaseEntity
     public DateTime NextProcessDate { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime? LastProcessedDate { get; set; }
+
+    public Subscription? Subscription { get; set; }
 }

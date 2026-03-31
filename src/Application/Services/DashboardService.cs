@@ -5,6 +5,7 @@ using Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Application.Features.Insights;
 
 namespace Application.Services;
 
@@ -13,6 +14,7 @@ public class DashboardService : IDashboardService
     private readonly IApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ICacheService _cache;
+    private readonly IFinancialInsightsEngine _insightsEngine;
 
     private static string SummaryKey(string userId, DateTime start, DateTime end)
         => $"dash:sum:{userId}:{start:yyyyMMdd}:{end:yyyyMMdd}";
@@ -22,11 +24,12 @@ public class DashboardService : IDashboardService
         => $"dash:ins:{userId}:{start:yyyyMMdd}:{end:yyyyMMdd}";
     private static string UserPrefix(string userId) => $"dash::{userId}:";
 
-    public DashboardService(IApplicationDbContext context, UserManager<ApplicationUser> userManager, ICacheService cache)
+    public DashboardService(IApplicationDbContext context, UserManager<ApplicationUser> userManager, ICacheService cache, IFinancialInsightsEngine insightsEngine)
     {
         _context = context;
         _userManager = userManager;
         _cache = cache;
+        _insightsEngine = insightsEngine;
     }
 
     public async Task<Result<PublicStatsDto>> GetPublicStatsAsync()
@@ -205,6 +208,17 @@ public class DashboardService : IDashboardService
                 MinTransaction = group.OrderBy(t => t.Amount).FirstOrDefault()
             });
         }
+
+        // --- NEW: Generate Financial Intelligence ---
+        var intelligence = await _insightsEngine.GenerateInsightsAsync(userId, endFilter);
+        insights.Intelligence = intelligence.Select(r => new FinancialInsightDto
+        {
+            Title = r.Title,
+            Message = r.Message,
+            Type = r.Type.ToString()
+        }).ToList();
+
+        await _cache.SetAsync(cacheKey, insights, TimeSpan.FromMinutes(30));
 
         return Result.Success(insights);
     }

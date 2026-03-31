@@ -1,4 +1,4 @@
-﻿using Application.Contracts;
+using Application.Contracts;
 using FluentValidation;
 using System.Reflection;
 using Application.DTOs.AccountCategory;
@@ -14,7 +14,11 @@ public static class ApplicationServiceExtensions
     {
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
+        services.AddMediatR(cfg => {
+            cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+            cfg.AddOpenBehavior(typeof(Application.Common.Behaviors.ValidationBehavior<,>));
+            cfg.AddOpenBehavior(typeof(Application.Common.Behaviors.CachingBehavior<,>));
+        });
 
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<ITransactionService, TransactionService>();
@@ -24,6 +28,8 @@ public static class ApplicationServiceExtensions
         services.AddScoped<ICategoryService<TransactionCategoryDto, UpsertTransactionCategoryDto>, TransactionCategoryService>();
 
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<Application.Features.Insights.IFinancialInsightsEngine, Application.Features.Insights.FinancialInsightsEngine>();
+        services.AddScoped<Domain.Rules.IFinancialRule, Application.Features.Insights.Rules.HighSubscriptionSpendRule>();
 
         return services;
     }

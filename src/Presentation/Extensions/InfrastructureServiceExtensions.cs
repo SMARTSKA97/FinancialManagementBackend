@@ -1,4 +1,4 @@
-﻿using Application;
+using Application;
 using Application.Contracts;
 using Domain.Entities;
 using Infrastructure.Persistence;
@@ -12,6 +12,8 @@ using System.Text;
 
 namespace API.Extensions;
 
+using Hangfire;
+using Hangfire.PostgreSql;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.BackgroundWorkers;
 using StackExchange.Redis;
@@ -41,8 +43,16 @@ public static class InfrastructureServiceExtensions
         services.AddScoped<IEmailService, RedisEmailService>();
         services.AddHostedService<EmailQueueWorker>();
 
-        // 2.4 Register Recurring Transaction Worker
-        services.AddHostedService<RecurringTransactionWorker>();
+        // 2.4 Register Hangfire
+        services.AddHangfire(config => config
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UsePostgreSqlStorage(options => options.UseNpgsqlConnection(configuration.GetConnectionString("DefaultConnection"))));
+        
+        services.AddHangfireServer();
+        
+        services.AddScoped<RecurringTransactionJob>();
 
         // 3. Register Identity with STRONG password requirements (dev AND production)
         services.AddIdentityCore<ApplicationUser>(options =>
